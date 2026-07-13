@@ -1,4 +1,4 @@
-so yeah#what is specifically wrong in my resume?
+# what is specifically wrong in my resume?
 
 import re
 from typing import List, Dict, Any, Optional
@@ -15,401 +15,211 @@ def analyze_issues(
         contact_info: Optional[Dict]=None, 
 ) -> List[IssueDetail]:
     
-    detected: List[IssueDetail]=[]
-
-    #Unpack frequently-used structured fields once at the top
+    detected: List[IssueDetail] = []
 
     exp_entries  = [e for e in parsed_resume.get('experience', []) if isinstance(e, dict)]
     edu_entries  = [e for e in parsed_resume.get('education',  []) if isinstance(e, dict)]
     proj_entries = [p for p in parsed_resume.get('projects',   []) if isinstance(p, dict)]
-    summary      = (parsed_resume.get('professional_summary') or '').strip()  # Handle None to prevent string concatenation errors
+    summary      = (parsed_resume.get('professional_summary') or '').strip()
 
-    #Build a combined experience text for regex-based checks that still need text
-    experience_text = '\n'.join(e.get('description', '') for e in exp_entries).strip()
-
-
-    #1. missig project section
     resume_lower = resume_text.lower()
-    has_projects_signal = any(kw in resume_lower for kw in [
-        'project', 'github.com', 'deployed', 'built a', 'developed a',
-        'created a', 'implemented a', 'live demo', 'tech stack',
-    ])
 
-    if not proj_entries and len(projects) == 0 and not has_projects_signal:
+    # 1. Missing Projects Section (High)
+    if not proj_entries and len(projects) == 0:
         detected.append(IssueDetail(
             issue_title="Missing Projects Section",
             severity_level="High",
             ats_impact="High",
             explanation=(
                 "Your resume does not have a dedicated Projects section. "
-                "ATS systems and recruiters look for concrete projects to validate "
-                "that your listed skills have been applied in practice."
+                "Recruiters and ATS filters look for concrete projects to validate "
+                "that your listed skills have been applied in practice, especially for tech roles."
             ),
-
-            where_it_appears="Resume structure — no 'Projects' header was detected",
-
-            how_to_fix=(
-                "Add a 'Projects' section with 2–3 significant projects. "
-                "For each project, include the title, technologies used, "
-                "what you built, and a measurable outcome."
-            ),
-
+            where_it_appears="Resume structure — no projects were parsed or detected",
+            how_to_fix="Add a 'PROJECTS' section heading and detail 2-3 personal or academic projects.",
             action_items=[
-                "Add a 'PROJECTS' section heading after your Experience section",
-                "Include 2–3 projects (personal, academic, or open-source)",
-                "For each project: write the title, tech stack used, what you built, and a measurable result",
-                "Example: 'E-Commerce Platform — React, Node.js, MongoDB. Handled 500+ transactions/month'",
-                "Link to GitHub or a live demo if available (e.g., github.com/yourname/project)",
+                "Add a 'PROJECTS' header below your Experience section",
+                "List 2–3 projects detailing the technologies used and what you built",
+                "Use bullet points to describe project outcomes"
             ],
-
             example_improvement=(
-                "Add:\n"
                 "PROJECTS\n"
-                "• E-Commerce Platform — Built a full-stack shopping site using "
-                "React, Node.js, and MongoDB. Implemented payment processing with "
-                "Stripe, handling 500+ transactions/month.\n"
-                "• ML Sentiment Analyzer — Trained a BERT model on 10K reviews "
-                "achieving 92% accuracy. Deployed as a REST API with FastAPI."
-            ),
+                "• ResuMatch — Built an AI-powered resume analyzer using Python, FastAPI, and Streamlit.\n"
+                "  Implemented phrase-level semantic matching, boosting parsing accuracy by 40%."
+            )
         ))
 
-    #2. missing experience section
-    has_experience_signal = any(kw in resume_lower for kw in [
-        'intern', 'internship', 'employed', 'worked at', 'working at',
-        'company', 'organization', 'job', 'role', 'position', 'designation',
-        'manager', 'engineer', 'developer', 'analyst', 'consultant',
-    ])
-
-    if not exp_entries and not has_experience_signal:
-        detected.append(IssueDetail(
-            issue_title="Missing Work Experience Section",
-            severity_level="High",
-            ats_impact="High",
-            explanation=(
-                "No work experience section was detected. Even for freshers, "
-                "internships, freelance work, or volunteer experience help "
-                "demonstrate professional capability."
-            ),
-            where_it_appears="Resume structure — no 'Experience' or 'Work History' header found",
-            how_to_fix=(
-                "Add an 'Experience' section. If you lack formal employment, "
-                "include internships, freelance projects, open-source contributions, "
-                "or relevant volunteer work."
-            ),
-            action_items=[
-                "Add an 'EXPERIENCE' or 'INTERNSHIPS' section to your resume",
-                "List each role with: Job Title — Company Name (Month Year – Month Year)",
-                "Add 2–4 bullet points per role describing what you did and its impact",
-                "If no formal job: include internships, freelance work, open-source, or college clubs",
-                "Start every bullet with a past-tense action verb (Developed, Built, Led, etc.)",
-            ],
-            example_improvement=(
-                "Add:\n"
-                "EXPERIENCE\n"
-                "Software Engineering Intern — XYZ Corp (Jun 2025 – Aug 2025)\n"
-                "• Developed REST APIs with FastAPI serving 10K requests/day\n"
-                "• Reduced page load time by 40% through caching optimization"
-            ),
-        ))
-
-    #3. Missing Education Section 
-    has_education_signal = any(kw in resume_lower for kw in [
-        'b.tech', 'btech', 'b.e.', 'b.sc', 'bsc', 'm.tech', 'mtech', 'm.sc',
-        'bachelor', 'master', 'phd', 'university', 'college',
-        'institute of technology', 'cgpa', 'gpa', 'graduated', 'diploma',
-        'class of', '20', 'batch of',
-    ])
-    if not edu_entries and not has_education_signal:
-        detected.append(IssueDetail(
-            issue_title="Missing Education Section",
-            severity_level="Moderate",
-            ats_impact="Medium",
-            explanation=(
-                "No education section was found. Most ATS systems expect an "
-                "Education section with at least your degree and institution."
-            ),
-            where_it_appears="Resume structure — no 'Education' header detected",
-            how_to_fix=(
-                "Add an 'Education' section listing your degree, university, "
-                "graduation year, and optionally your GPA or relevant coursework."
-            ),
-            action_items=[
-                "Add an 'EDUCATION' section (usually at the bottom for experienced candidates, top for freshers)",
-                "Include: Degree name — Institution name (Start Year – End Year)",
-                "Add your CGPA or percentage if it is 7.0+ or 70%+",
-                "Optionally list 3–5 relevant courses (e.g., Data Structures, DBMS, ML)",
-            ],
-            example_improvement=(
-                "Add:\n"
-                "EDUCATION\n"
-                "B.Tech in Computer Science — IIT Delhi (2021–2025)\n"
-                "CGPA: 8.5 | Relevant Coursework: Data Structures, ML, DBMS"
-            ),
-        ))
-
-    #4. Missing Skills Section 
-    if not parsed_resume.get('skills') and len(skills) < 3:  # only flag if extraction also found very few skills
-        detected.append(IssueDetail(
-            issue_title="Missing or Weak Skills Section",
-            severity_level="High",
-            ats_impact="High",
-            explanation=(
-                f"Only {len(skills)} skill(s) were detected. ATS systems "
-                "rely heavily on keyword matching from a dedicated Skills section. "
-                "Without clear skills listed, your resume may fail automated filters."
-            ),
-            where_it_appears="Skills section — either missing or contains very few items",
-            how_to_fix=(
-                "Add a clear 'Skills' section organized by category. "
-                "Include programming languages, frameworks, tools, and soft skills "
-                "that match your target role."
-            ),
-            action_items=[
-                "Add a 'TECHNICAL SKILLS' or 'SKILLS' section",
-                "Organize by category: Languages, Frameworks, Tools, Databases, Cloud",
-                "List at least 10–15 skills relevant to your target role",
-                "Use the exact names that appear in job descriptions (e.g., 'React.js' not just 'React')",
-                "Include tools you use daily: Git, VS Code, Postman, Docker, etc.",
-            ],
-            example_improvement=(
-                "Add:\n"
-                "TECHNICAL SKILLS\n"
-                "Languages: Python, JavaScript, TypeScript, SQL\n"
-                "Frameworks: React, FastAPI, Django, Express.js\n"
-                "Tools: Docker, Git, AWS, PostgreSQL, MongoDB"
-            ),
-        ))
-
-    # 5. Skills Lack Supporting Evidence
-    unvalidated = skill_validation.get('unvalidated_skills', [])
-    validated   = skill_validation.get('validated_skills', [])
-    total_skills = len(unvalidated) + len(validated)
-
-    if total_skills > 0 and len(unvalidated) > len(validated):
-        unsupported_list = ', '.join(unvalidated[:8])
-        pct_unsupported = round((len(unvalidated) / total_skills) * 100)
-        action_items_skills = [
-            f"Mention '{skill}' in a project or experience bullet point" for skill in unvalidated[:5]
-        ]
-        action_items_skills.append("Remove skills you cannot demonstrate with any project or experience")
-        if len(unvalidated) > 5:
-            action_items_skills.append(f"({len(unvalidated) - 5} more unvalidated skills — review each one)")
-        detected.append(IssueDetail(
-            issue_title="Most Skills Lack Supporting Evidence",
-            severity_level="Moderate",
-            ats_impact="High",
-            explanation=(
-                f"{pct_unsupported}% of your listed skills ({len(unvalidated)} out of "
-                f"{total_skills}) are not backed by any mention in your projects or "
-                "experience sections. Recruiters and ATS systems cross-reference "
-                "skills against actual work to verify credibility."
-            ),
-            where_it_appears=f"These skills have no supporting context: {unsupported_list}",
-            how_to_fix=(
-                "For each skill in your Skills section, ensure it appears at least "
-                "once in a project description or experience bullet point. "
-                "Describe how and where you used that technology."
-            ),
-            action_items=action_items_skills,
-            example_improvement=(
-                f"Your skill '{unvalidated[0]}' has no supporting evidence.\n\n"
-                f"Fix: Add to a project or experience bullet:\n"
-                f"'Built a data pipeline using {unvalidated[0]} that processed "
-                "10K records daily, reducing manual effort by 60%.'"
-            ),
-        ))
-
-    #6. Weak Action Verbs 
-    description_lines = [
-        line.strip()
-        for exp in exp_entries
-        for line in exp.get('description', '').split('\n')
-        if line.strip()
-    ]
-
-    if len(description_lines) > 3 and len(action_verbs) < 3:
-        detected.append(IssueDetail(
-            issue_title="Bullet Points Lack Strong Action Verbs",
-            severity_level="Moderate",
-            ats_impact="Medium",
-            explanation=(
-                f"Your experience section has {len(description_lines)} bullet points but "
-                f"only {len(action_verbs)} start with strong action verbs. "
-                "ATS systems and recruiters favor bullets that begin with verbs like "
-                "'Developed', 'Implemented', 'Designed', 'Optimized'."
-            ),
-            where_it_appears="Experience section — bullet point openings",
-            how_to_fix=(
-                "Start every bullet point with a past-tense action verb. "
-                "Avoid starting with 'Responsible for', 'Worked on', or 'Helped with'. "
-                "Use verbs like: Developed, Built, Designed, Implemented, Led, Automated, Optimized."
-            ),
-            action_items=[
-                "Rewrite every bullet that starts with 'Responsible for', 'Helped', 'Worked on', or 'Assisted'",
-                "Use: Developed, Built, Designed, Implemented, Led, Automated, Optimized, Deployed, Reduced, Increased",
-                "Make verbs past-tense for previous roles, present-tense for current role",
-                f"Review all {len(description_lines)} bullet points — at least {len(description_lines)} should start with action verbs",
-                "Avoid weak openers like 'Was responsible for...' or 'Involved in...'",
-            ],
-            example_improvement=(
-                "Before:\n"
-                "• Responsible for building the backend\n"
-                "• Worked on the payment feature\n\n"
-                "After:\n"
-                "• Developed a REST API with FastAPI handling 5K daily requests\n"
-                "• Implemented Stripe payment integration reducing checkout time by 30%"
-            ),
-        ))
-
-    #7. No Quantifiable Achievements 
-    number_pattern = r'\d+[%+]?|\$\d+'
-    has_metrics = bool(re.findall(number_pattern, experience_text)) if experience_text else False
-
-    if experience_text and not has_metrics:
-        detected.append(IssueDetail(
-            issue_title="No Quantifiable Achievements Found",
-            severity_level="Moderate",
-            ats_impact="Medium",
-            explanation=(
-                "Your experience section does not contain any measurable outcomes "
-                "(numbers, percentages, or dollar amounts). Quantified achievements "
-                "make your impact concrete and are strongly preferred by recruiters."
-            ),
-            where_it_appears="Experience section — bullet point content",
-            how_to_fix=(
-                "Add numbers to at least 50% of your bullet points. "
-                "Include metrics like: users served, response time improved, "
-                "revenue generated, lines of code, team size, etc."
-            ),
-            action_items=[
-                "Go through each bullet point and ask: 'How much?', 'How many?', 'By what %?'",
-                "Add metrics: users served, requests/day, % improvement, team size, time saved",
-                "Examples: '500+ daily users', 'reduced load time by 40%', 'handled 10K API calls/day'",
-                "If exact numbers aren't known, use reasonable estimates (e.g., '~200 users')",
-                "Aim for numbers in at least 50% of your experience bullets",
-            ],
-            example_improvement=(
-                "Before:\n"
-                "• Improved application performance\n"
-                "• Managed a team of developers\n\n"
-                "After:\n"
-                "• Improved API response time by 45% through Redis caching\n"
-                "• Led a team of 5 developers delivering 3 features per sprint"
-            ),
-        ))
-
-    #8. Missing Contact Information 
+    # 2. Incomplete Contact Details (High)
     if contact_info:
         missing_contacts = []
         if not contact_info.get('email'):
-            missing_contacts.append('email')
+            missing_contacts.append('email address')
         if not contact_info.get('phone'):
             missing_contacts.append('phone number')
         if not contact_info.get('linkedin'):
-            missing_contacts.append('LinkedIn URL')
+            missing_contacts.append('LinkedIn profile')
 
-        if len(missing_contacts) >= 2:
-            contact_action_items = [f"Add your {item} to the header section" for item in missing_contacts]
-            contact_action_items += [
-                "Format the contact line as: email | phone | linkedin | github",
-                "Make sure your LinkedIn URL is a custom short URL (linkedin.com/in/yourname)",
-                "Add a GitHub link if you have public projects (github.com/yourname)",
-            ]
+        if missing_contacts:
             detected.append(IssueDetail(
                 issue_title="Incomplete Contact Information",
                 severity_level="High",
                 ats_impact="High",
                 explanation=(
-                    f"Your resume is missing: {', '.join(missing_contacts)}. "
-                    "Recruiters need reliable ways to reach you. Missing contact "
-                    "details can cause your application to be skipped entirely."
+                    f"Your contact header is missing: {', '.join(missing_contacts)}. "
+                    "ATS systems and hiring managers require direct contact options to proceed "
+                    "with scheduling interviews."
                 ),
-                where_it_appears="Header / Contact section at the top of the resume",
-                how_to_fix=(
-                    "Add your full name, email, phone number, LinkedIn profile, "
-                    "and optionally a GitHub or portfolio link at the top of your resume."
-                ),
-                action_items=contact_action_items,
+                where_it_appears="Top header section of the resume",
+                how_to_fix=f"Include your {' and '.join(missing_contacts)} clearly in the contact header.",
+                action_items=[f"Add your {item} at the top of the page" for item in missing_contacts],
                 example_improvement=(
-                    "Add at top:\n"
-                    "John Doe\n"
-                    "john.doe@email.com | +91-9876543210\n"
-                    "linkedin.com/in/johndoe | github.com/johndoe"
-                ),
+                    f"{parsed_resume.get('name') or 'John Doe'}\n"
+                    f"{'email@address.com' if 'email address' in missing_contacts else contact_info.get('email')} | "
+                    f"{'+91 99034 27270' if 'phone number' in missing_contacts else contact_info.get('phone')} | "
+                    f"{'linkedin.com/in/username' if 'LinkedIn profile' in missing_contacts else contact_info.get('linkedin')}"
+                )
             ))
 
-    # 9. Low Formatting Score 
-    formatting_score = scores.get('formatting_score', 20)
-    if formatting_score < 10:
+    # 3. No Quantifiable Achievements (Medium)
+    number_patterns = [
+        r'\d+%',
+        r'\$\d+',
+        r'\d+[kKmMbB]',
+        r'\d+\s*(?:users|customers|clients|projects|hours|days|months|years)',
+        r'(?:increased|decreased|improved|reduced|grew|saved)\s+(?:by\s+)?\d+',
+    ]
+    achievement_count = sum(len(re.findall(p, resume_text, re.IGNORECASE)) for p in number_patterns)
+    if achievement_count == 0 and exp_entries:
+        title_ev = exp_entries[0].get('job_title') or "your professional roles"
+        comp_ev = exp_entries[0].get('company') or "your companies"
         detected.append(IssueDetail(
-            issue_title="Poor Resume Formatting",
-            severity_level="High",
-            ats_impact="High",
+            issue_title="No Quantifiable Achievements Found",
+            severity_level="Medium",
+            ats_impact="Medium",
             explanation=(
-                f"Your formatting score is {formatting_score}/20, which indicates "
-                "problems like missing section headers, inconsistent structure, "
-                "or non-standard layout that ATS parsers struggle with."
+                f"Your experience descriptions (such as your role as '{title_ev}' at '{comp_ev}') "
+                "do not contain any numerical metrics, percentages, or dollar values. "
+                "ATS systems and recruiters heavily favor bullet points that prove impact using metrics."
             ),
-            where_it_appears="Overall document structure and formatting",
-            how_to_fix=(
-                "Use a clean, single-column layout with standard section headers "
-                "(Experience, Education, Skills, Projects). Use consistent bullet "
-                "points, standard fonts, and avoid tables, columns, or graphics."
-            ),
+            where_it_appears="Experience section — bullet point descriptions",
+            how_to_fix="Add metrics to at least 50% of your experience bullets, detailing scale, users, or performance improvements.",
             action_items=[
-                "Switch to a single-column layout (avoid two-column templates for ATS)",
-                "Use standard section headers: EXPERIENCE, EDUCATION, SKILLS, PROJECTS",
-                "Use bullet points (•) consistently — don't mix with dashes or asterisks",
-                "Remove all tables, text boxes, headers/footers, and images — ATS cannot parse them",
-                "Use a standard font (Calibri, Arial, Times New Roman) at 10–12pt",
-                "Order sections: Contact → Summary → Experience → Projects → Education → Skills",
+                f"Review bullets for '{title_ev}' and ask: 'How much?', 'How many?', 'By what %?'",
+                "Add metrics like: load time reduced by X%, API requests handled, or team size led",
+                "Estimate numbers reasonably if exact metrics are unavailable (e.g. 'serving ~500 users')"
             ],
             example_improvement=(
-                "Use this structure:\n"
-                "NAME & CONTACT\n"
-                "SUMMARY (2-3 lines)\n"
-                "EXPERIENCE (reverse chronological)\n"
-                "PROJECTS (2-3 key projects)\n"
-                "EDUCATION\n"
-                "SKILLS (categorized)"
-            ),
+                "Before:\n"
+                "• Managed a crowdfunding platform UI and integrated backend services.\n\n"
+                "After:\n"
+                "• Developed 12+ responsive UI components with React, serving 500+ active users.\n"
+                "• Optimized REST APIs, reducing page latency by 35%."
+            )
         ))
 
-    #10. Missing Summary/Objective
-    if not summary:
+    # 4. Skills Lack Evidence (Medium/Low)
+    unvalidated = skill_validation.get('unvalidated_skills', [])
+    validated   = skill_validation.get('validated_skills', [])
+    total_skills = len(unvalidated) + len(validated)
+
+    if total_skills > 0 and len(unvalidated) > 0:
+        unsupported_list = ', '.join(unvalidated[:5])
+        pct_unsupported = round((len(unvalidated) / total_skills) * 100)
+        action_items_skills = [
+            f"Add context or mention '{skill}' in a project description or experience bullet" 
+            for skill in unvalidated[:4]
+        ]
+        if len(unvalidated) > 4:
+            action_items_skills.append(f"Review the remaining {len(unvalidated) - 4} unvalidated skills")
+
         detected.append(IssueDetail(
-            issue_title="Missing Professional Summary",
-            severity_level="Low",
-            ats_impact="Low",
+            issue_title="Skills Lack Supporting Evidence",
+            severity_level="Medium",
+            ats_impact="High",
             explanation=(
-                "Your resume does not include a Professional Summary or Objective "
-                "section at the top. While not required, a 2-3 line summary helps "
-                "recruiters quickly understand your profile and target role."
+                f"{pct_unsupported}% of your technical skills ({len(unvalidated)} out of {total_skills}) "
+                "are listed in your Skills section but do not appear in any of your experience or project descriptions. "
+                "Recruiters cross-reference skills against actual work to check credibility."
             ),
-            where_it_appears="Top of resume — below contact info",
-            how_to_fix=(
-                "Add a 2-3 sentence summary highlighting your experience level, "
-                "key skills, and career focus. Tailor it to the job you're applying for."
+            where_it_appears=f"Unvalidated skills: {unsupported_list}",
+            how_to_fix="Integrate your technical skills naturally into your project and job descriptions.",
+            action_items=action_items_skills,
+            example_improvement=(
+                f"Your skill '{unvalidated[0]}' has no supporting project context.\n\n"
+                f"Fix: Add to a project bullet:\n"
+                f"• Integrated '{unvalidated[0]}' database services to handle user authentication, securing 500+ accounts."
+            )
+        ))
+
+    # 5. Weak Action Verbs (Low)
+    if action_verbs and len(action_verbs) < 5:
+        detected.append(IssueDetail(
+            issue_title="Inconsistent Use of Action Verbs",
+            severity_level="Low",
+            ats_impact="Medium",
+            explanation=(
+                f"Only {len(action_verbs)} action verbs (e.g. {', '.join(action_verbs)}) were detected in your bullet points. "
+                "ATS systems look for strong, action-oriented openings for each bullet point."
             ),
+            where_it_appears="Experience and Projects sections",
+            how_to_fix="Ensure every bullet point begins with a strong past-tense action verb.",
             action_items=[
-                "Add a 'PROFESSIONAL SUMMARY' or 'OBJECTIVE' section at the top of your resume",
-                "Write 2–3 sentences: who you are, your key skills, and what role you seek",
-                "Mention your years of experience or education level upfront",
-                "Tailor this section for each job application — reference the specific role",
-                "Keep it under 60 words — recruiters spend only 6 seconds on first scan",
+                "Rewrite bullets starting with passive language like 'Responsible for' or 'Helped with'",
+                "Use strong verbs: Developed, Optimized, Integrated, Automated, Maintained"
             ],
             example_improvement=(
-                "Add:\n"
-                "PROFESSIONAL SUMMARY\n"
-                "Full-stack developer with 2+ years of experience building scalable "
-                "web applications using React, Node.js, and AWS. Passionate about "
-                "clean architecture and performance optimization."
-            ),
+                "Before: Responsible for maintaining Git repositories.\n"
+                "After: Managed Git version control workflow, coordinating branch merges for a team of 4."
+            )
         ))
+
+    # Sort issues by severity: High -> Medium -> Low
+    severity_rank = {"High": 1, "Medium": 2, "Low": 3}
+    detected.sort(key=lambda x: severity_rank.get(x.severity_level, 4))
+
+    # 6. Score Breakdown Card (Append at the end)
+    fs = scores.get('formatting_score', 0)
+    ks = scores.get('keywords_score', 0)
+    cs = scores.get('content_score', 0)
+    sv = scores.get('skill_validation_score', 0)
+    ac = scores.get('ats_compatibility_score', 0)
+    os_score = scores.get('overall_score', 0)
+
+    breakdown_text = (
+        f"Formatting: {fs}/20  |  Keywords: {ks}/25  |  Content: {cs}/25  |  "
+        f"Skill Validation: {sv}/15  |  ATS Compatibility: {ac}/15"
+    )
+
+    detected.append(IssueDetail(
+        issue_title="ATS Score Breakdown & Explanation",
+        severity_level="Low",
+        ats_impact="Traceability",
+        explanation=(
+            f"Your overall ATS score is {os_score}/100. Below is the step-by-step breakdown "
+            "of how your score was calculated across the five key evaluation categories."
+        ),
+        where_it_appears=breakdown_text,
+        how_to_fix="Focus on improving the high-priority issues above to boost your score.",
+        action_items=[
+            f"Formatting ({fs}/20): Points awarded for section presence (Exp, Edu, Skills, Projects) and bullet structure.",
+            f"Keywords ({ks}/25): Based on number of technical terms ({len(skills)} skills detected).",
+            f"Content ({cs}/25): Earned for action verb count ({len(action_verbs)}) and metric presence.",
+            f"Skill Validation ({sv}/15): Proportional to skills validated ({len(validated)}/{total_skills} skills, {skill_validation.get('validation_percentage', 0)*100:.1f}%).",
+            f"ATS Compatibility ({ac}/15): Base score minus location privacy or special character layout penalties."
+        ],
+        example_improvement=(
+            "Mathematical Aggregation:\n"
+            f"1. Formatting Pct: {fs/20*100:.1f}%\n"
+            f"2. Keywords Pct: {ks/25*100:.1f}%\n"
+            f"3. Content Pct: {cs/25*100:.1f}%\n"
+            f"4. Skill Validation Pct: {sv/15*100:.1f}%\n"
+            f"5. ATS Compatibility Pct: {ac/15*100:.1f}%\n\n"
+            f"Overall weighted aggregate base score: {os_score:.1f}/100"
+        )
+    ))
 
     return detected
 
-
 def generate_issues_summary(detected_issues: List[IssueDetail]) -> List[str]:
     """Extract issue titles to formulate the issues_summary list."""
-    return [issue.issue_title for issue in detected_issues]
+    return [issue.issue_title for issue in detected_issues if issue.issue_title != "ATS Score Breakdown & Explanation"]

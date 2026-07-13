@@ -89,23 +89,64 @@ def _calculate_semantic_similarity(skill: str, text: str, embedder: SentenceTran
         log_warning(f"Similarity error for '{skill}': {e}", context='ats_scorer')
         return 0.0
 
-def _skill_matches(skill: str, text: str, embedder: SentenceTransformer, threshold: float) -> Tuple[bool, float]:
-
-    #fast, o(n) directly check if skill is a substring of the text (case-insensitive)
-    if skill.lower() in text.lower():
-        return True, 1.0
+def _is_word_match(skill: str, text: str) -> bool:
+    skill_lower = skill.lower().strip()
+    text_lower = text.lower()
+    if not skill_lower or not text_lower:
+        return False
+        
+    pattern = re.escape(skill_lower)
     
-    #slow, semantic similarity check using sentence embeddings
-    sim = _calculate_semantic_similarity(skill, text, embedder)
-    return sim >= threshold, sim
+    # If the skill starts or ends with an alphanumeric character, use \b word boundary
+    left_boundary = r'\b' if skill_lower[0].isalnum() else ''
+    right_boundary = r'\b' if skill_lower[-1].isalnum() else ''
+    
+    full_pattern = f"{left_boundary}{pattern}{right_boundary}"
+    try:
+        return bool(re.search(full_pattern, text_lower))
+    except Exception:
+        return skill_lower in text_lower
 
-#Skill validation
+
+def _skill_matches_precomputed(
+    skill: str,
+    skill_vec: np.ndarray,
+    skill_norm: float,
+    text_items: List[str],
+    item_vecs: List[np.ndarray],
+    item_norms: List[float],
+    threshold: float
+) -> Tuple[bool, float]:
+    if not text_items:
+        return False, 0.0
+        
+    # 1. Word boundary fast-path check
+    for item in text_items:
+        if _is_word_match(skill, item):
+            return True, 1.0
+            
+    # 2. Semantic matching using precomputed vectors
+    max_sim = 0.0
+    for i, item in enumerate(text_items):
+        item_vec = item_vecs[i]
+        item_norm = item_norms[i]
+        if skill_norm == 0.0 or item_norm == 0.0:
+            sim = 0.0
+        else:
+            sim = np.dot(skill_vec, item_vec) / (skill_norm * item_norm)
+            
+        if sim > max_sim:
+            max_sim = sim
+            
+    return max_sim >= threshold, float(max_sim)
+
+
 def validate_skills_with_projects(
     skills: List[str],
     projects: List[Dict],
     experience_entries: List[Dict],
     embedder: SentenceTransformer,
-    threshold: float = 0.6,
+    threshold: float = 0.50,
 ) -> Dict:
     
     if not skills:
@@ -117,11 +158,70 @@ def validate_skills_with_projects(
             'validation_score':      0.0,
         }
 
-    experience_text = ' '.join(
-        f"{e.get('job_title', '')} {e.get('company', '')} {e.get('description', '')}"
-        for e in experience_entries
-        if isinstance(e, dict)
-    ).strip()
+    # Precompute skill vectors and norms
+    skill_vecs = {}
+    skill_norms = {}
+    for skill in skills:
+        vec = embedder.encode(skill, convert_to_tensor=False)
+        skill_vecs[skill] = vec
+        skill_norms[skill] = float(np.linalg.norm(vec))
+
+    # Prepare experience items and precompute their vectors
+    experience_items = []
+    for e in experience_entries:
+        if not isinstance(e, dict):
+            continue
+        job_title = (e.get('job_title') or '').strip()
+        company = (e.get('company') or '').strip()
+        desc = (e.get('description') or '').strip()
+        
+        if job_title:
+            experience_items.append(job_title)
+        if company:
+            experience_items.append(company)
+        if desc:
+            experience_items.append(desc)
+            clauses = [c.strip() for c in re.split(r'[,;.\n\-\•]+', desc) if c.strip()]
+            experience_items.extend(clauses)
+
+    exp_vecs = []
+    exp_norms = []
+    for item in experience_items:
+        vec = embedder.encode(item, convert_to_tensor=False)
+        exp_vecs.append(vec)
+        exp_norms.append(float(np.linalg.norm(vec)))
+
+    # Prepare project items and precompute their vectors
+    projects_data = []
+    for project in projects:
+        project_title = (project.get('title') or '').strip()
+        project_desc = (project.get('description') or '').strip()
+        project_techs = project.get('technologies', [])
+        
+        project_items = []
+        if project_title:
+            project_items.append(project_title)
+        for tech in project_techs:
+            if tech and isinstance(tech, str) and tech.strip():
+                project_items.append(tech.strip())
+        if project_desc:
+            project_items.append(project_desc)
+            clauses = [c.strip() for c in re.split(r'[,;.\n\-\•]+', project_desc) if c.strip()]
+            project_items.extend(clauses)
+
+        proj_vecs = []
+        proj_norms = []
+        for item in project_items:
+            vec = embedder.encode(item, convert_to_tensor=False)
+            proj_vecs.append(vec)
+            proj_norms.append(float(np.linalg.norm(vec)))
+            
+        projects_data.append({
+            'title': (project.get('title') or 'Untitled Project'),
+            'items': project_items,
+            'vecs': proj_vecs,
+            'norms': proj_norms
+        })
 
     validated_skills      = []
     unvalidated_skills    = []
@@ -130,17 +230,27 @@ def validate_skills_with_projects(
     for skill in skills:
         matching_projects = []
         max_similarity    = 0.0
+        
+        skill_vec = skill_vecs[skill]
+        skill_norm = skill_norms[skill]
 
-        for project in projects:
-            project_text = f"{project.get('title', '')} {project.get('description', '')}"
-            matched, sim = _skill_matches(skill, project_text, embedder, threshold)
+        for p_data in projects_data:
+            matched, sim = _skill_matches_precomputed(
+                skill, skill_vec, skill_norm,
+                p_data['items'], p_data['vecs'], p_data['norms'],
+                threshold
+            )
             max_similarity = max(max_similarity, sim)
 
             if matched:
-                matching_projects.append(project.get('title', 'Untitled Project'))
+                matching_projects.append(p_data['title'])
 
-        if experience_text:
-            matched, sim = _skill_matches(skill, experience_text, embedder, threshold)
+        if experience_items:
+            matched, sim = _skill_matches_precomputed(
+                skill, skill_vec, skill_norm,
+                experience_items, exp_vecs, exp_norms,
+                threshold
+            )
             max_similarity = max(max_similarity, sim)
             if matched and 'Experience Section' not in matching_projects:
                 matching_projects.append('Experience Section')
@@ -152,7 +262,7 @@ def validate_skills_with_projects(
             unvalidated_skills.append(skill)
             skill_project_mapping[skill] = []
 
-    validation_percentage = len(validated_skills) / len(skills)
+    validation_percentage = len(validated_skills) / len(skills) if skills else 0.0
     validation_score      = validation_percentage * 15.0
 
     return {

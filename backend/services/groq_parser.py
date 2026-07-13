@@ -1,6 +1,7 @@
 import os
 import json 
 import logging
+import re
 from typing import Dict
 
 from groq import Groq
@@ -84,6 +85,7 @@ def _call_groq(client:Groq, system_prompt:str, user_prompt:str)->str:
             {'role': 'user', 'content': user_prompt}
         ],
         temperature=0.0,
+        seed=42,
         max_tokens=4096
     )
 
@@ -115,8 +117,8 @@ def parse_resume(raw_text: str)->Dict:
     raw_response=_call_groq(client, RESUME_SYSTEM_PROMPT, prompt)
     result=_try_parse_json(raw_response)
 
-    if result is None:
-        return _validate_resume_result(result)
+    if result is not None:
+        return _validate_resume_result(result, raw_text)
     
 
     logger.warning("Groq resume parse: first attempt returned invalid JSON, retrying...")
@@ -128,7 +130,7 @@ def parse_resume(raw_text: str)->Dict:
     raw_response = _call_groq(client, RESUME_SYSTEM_PROMPT, strict_prompt)
     result = _try_parse_json(raw_response)
     if result is not None:
-        return _validate_resume_result(result)
+        return _validate_resume_result(result, raw_text)
 
     raise ValueError(
         f"Groq returned unparseable response after retry. Raw response:\n{raw_response[:500]}"
@@ -206,8 +208,35 @@ def _validate_jd_result(result: dict) -> dict:
     return result
 
 
+def _normalize_and_deduplicate(lst: list) -> list:
+    if not isinstance(lst, list):
+        return []
+    seen = set()
+    normalized = []
+    for item in lst:
+        if not item:
+            continue
+        item_str = str(item).strip()
+        if not item_str:
+            continue
+        item_lower = item_str.lower()
+        if item_lower not in seen:
+            seen.add(item_lower)
+            normalized.append(item_str)
+    return normalized
+
+
+COMMON_ACTION_VERBS = {
+    'led', 'managed', 'developed', 'built', 'designed', 'implemented', 'created',
+    'optimized', 'co-developed', 'contributed', 'collaborated', 'engineered', 
+    'architected', 'programmed', 'formulated', 'analyzed', 'executed', 'generated',
+    'increased', 'decreased', 'saved', 'reduced', 'improved', 'integrated', 
+    'automated', 'deployed', 'launched', 'directed', 'coordinated', 'administered'
+}
+
+
 #to make sure the parse json has all the valid json fields
-def _validate_resume_result(result: dict) -> dict:
+def _validate_resume_result(result: dict, raw_text: str = "") -> dict:
 
     defaults = {
         "name": "",
@@ -232,6 +261,20 @@ def _validate_resume_result(result: dict) -> dict:
         if isinstance(default, list) and not isinstance(result[key], list):
             result[key] = default
 
+    # Supplement action_verbs with local deterministic extraction from raw_text
+    if raw_text:
+        local_verbs = []
+        text_lower = raw_text.lower()
+        for verb in COMMON_ACTION_VERBS:
+            if re.search(rf'\b{re.escape(verb)}\b', text_lower):
+                local_verbs.append(verb.capitalize() if '-' not in verb else '-'.join(w.capitalize() for w in verb.split('-')))
+        merged_verbs = result.get("action_verbs", []) + local_verbs
+        result["action_verbs"] = merged_verbs
+
+    # Normalize list fields
+    for list_key in ["skills", "keywords", "action_verbs", "certifications"]:
+        result[list_key] = _normalize_and_deduplicate(result.get(list_key, []))
+
     #Validate experience entries
     for exp in result.get("experience", []):
         if not isinstance(exp, dict):
@@ -255,6 +298,7 @@ def _validate_resume_result(result: dict) -> dict:
         proj.setdefault("title", "")
         proj.setdefault("description", "")
         proj.setdefault("technologies", [])
+        proj["technologies"] = _normalize_and_deduplicate(proj.get("technologies", []))
 
     return result
 

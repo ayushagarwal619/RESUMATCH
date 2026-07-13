@@ -27,6 +27,7 @@ async def analyze_resume(
     job_description: str = Form('', description='Job description text (optional)'),
     user_id: str = Depends(get_current_user),
 ):
+    logger.info("Entering analyze_resume endpoint")
     warnings: List[str] = []
 
 
@@ -35,9 +36,12 @@ async def analyze_resume(
 
 
     try:
+        logger.info("Reading uploaded file bytes")
         file_bytes = await resume.read()
         filename   = resume.filename or 'resume'
+        logger.info(f"Read file bytes: {len(file_bytes)}")
 
+        logger.info("Importing parse_resume_file and executing parser")
         from backend.services.resume_parser import (
             FileParsingError,
             FileValidationError,

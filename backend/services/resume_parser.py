@@ -126,26 +126,79 @@ def _extract_pdf_with_pypdf2(file_data: bytes) -> str:
     return text.strip()
 
 
+def _extract_pdf_with_ocr(file_data: bytes) -> str:
+    log_info("Starting OCR fallback for scanned PDF...", context="resume_parser")
+    try:
+        import pypdfium2 as pdfium
+        import pytesseract
+        import os
+
+        # Configure tesseract path on Windows if present in common directories
+        tesseract_search_paths = [
+            r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+            r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+            os.path.expandvars(r"%LOCALAPPDATA%\Tesseract-OCR\tesseract.exe")
+        ]
+        for path in tesseract_search_paths:
+            if os.path.exists(path):
+                pytesseract.pytesseract.tesseract_cmd = path
+                break
+
+        doc = pdfium.PdfDocument(file_data)
+        ocr_text = []
+        for i in range(len(doc)):
+            page = doc[i]
+            # scale=2 provides 150 DPI which is generally good for OCR
+            bitmap = page.render(scale=2)
+            pil_img = bitmap.to_pil()
+            text = pytesseract.image_to_string(pil_img)
+            if text.strip():
+                ocr_text.append(text)
+        
+        full_text = "\n".join(ocr_text).strip()
+        if not full_text:
+            raise FileParsingError(
+                "OCR was unable to extract any text from the scanned PDF."
+            )
+        
+        log_info(f"OCR successfully extracted {len(full_text)} characters", context="resume_parser")
+        return full_text
+
+    except pytesseract.TesseractNotFoundError as e:
+        log_error(e, context="resume_parser_ocr_missing")
+        raise FileParsingError(
+            "This PDF appears to be a scanned image containing no selectable text. "
+            "To analyze scanned PDFs, Tesseract OCR must be installed on the server. "
+            "Please install Tesseract OCR (https://github.com/UB-Mannheim/tesseract/wiki) "
+            "and ensure 'tesseract.exe' is added to the system PATH or default directories."
+        ) from e
+    except Exception as e:
+        log_error(e, context="resume_parser_ocr_failed")
+        raise FileParsingError(
+            f"Failed to extract text using OCR: {e}"
+        ) from e
+
+
 def extract_text_from_pdf(file_data: bytes) -> str:
     try: 
         result, used_fallback=with_fallback(
-        _extract_pdf_with_pdfplumber, 
-        _extract_pdf_with_pypdf2, 
-        file_data, 
-        log_fallback=True
-    )
+            _extract_pdf_with_pdfplumber, 
+            _extract_pdf_with_pypdf2, 
+            file_data, 
+            log_fallback=True
+        )
     
         if used_fallback:
             log_info('PDF EXTRACTION succeded using the PyPDF2 fallback', context='resume_parser')
         return result
         
-    except Exception as e:
-        log_error(e, context='extract_text_from_pdf')
-        raise FileParsingError(
-            'Failed to extract text from PDF using both pdfplumber and PyPDF2. '
-            'The PDF may be corrupted, password-protected, or contain only scanned images. '
-            'Please ensure it contains selectable text.'
-        ) from e
+    except Exception as primary_exc:
+        log_warning(f"Standard PDF extraction failed: {primary_exc}. Attempting OCR fallback...", context="resume_parser")
+        try:
+            return _extract_pdf_with_ocr(file_data)
+        except Exception as ocr_exc:
+            log_error(ocr_exc, context='extract_text_from_pdf_ocr')
+            raise ocr_exc
     
 
 def extract_text_from_docx(file_data: bytes) -> str:
@@ -202,6 +255,7 @@ def extract_text_from_doc(file_data: bytes) -> str:
     )
 
 def extract_text(file_data:bytes, file_type:str)->str:
+    log_info(f'extract_text() entered with type={file_type}', context='resume_parser')
     if file_type=='pdf':
         return extract_text_from_pdf(file_data)
     elif file_type=='docx':
@@ -216,7 +270,7 @@ def extract_text(file_data:bytes, file_type:str)->str:
         )
     
 def parse_resume_file(file_data: bytes, filename:str)->Tuple[str, dict]:
-    log_info(f'parsing file :{filename}', context='parse_Resume_file')
+    log_info(f'parse_resume_file() entered for file: {filename}', context='resume_parser')
 
     #phase01:validate file
     try:

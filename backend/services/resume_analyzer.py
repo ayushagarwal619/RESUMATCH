@@ -152,29 +152,72 @@ def _generate_strengths(
     """Generate a list of things the resume does well, based on actual structured data."""
     strengths = []
 
-    if parsed_resume.get('experience'):
-        strengths.append("Has a dedicated Experience section")
-    if parsed_resume.get('projects') or len(projects) > 0:
-        strengths.append("Includes a Projects section showcasing applied skills")
-    if parsed_resume.get('education'):
-        strengths.append("Education section is present")
-    if parsed_resume.get('skills'):
-        strengths.append("Clear Skills section with listed technologies")
-    if parsed_resume.get('professional_summary', '').strip():
-        strengths.append("Professional Summary provides a quick overview")
+    # 1. Experience
+    exp_entries = parsed_resume.get('experience', [])
+    if exp_entries:
+        companies = [e.get('company') for e in exp_entries if e.get('company')]
+        titles = [e.get('job_title') for e in exp_entries if e.get('job_title')]
+        if companies and titles:
+            strengths.append(f"Professional work experience as {titles[0]} at {companies[0]}")
+        else:
+            strengths.append("Structured professional work history section is present")
 
-    if len(skills) >= 8:
-        strengths.append(f"Strong skill set — {len(skills)} skills detected")
-    if len(action_verbs) >= 5:
-        strengths.append(f"Uses {len(action_verbs)} strong action verbs in bullet points")
+    # 2. Projects
+    proj_entries = parsed_resume.get('projects', []) or projects
+    if proj_entries:
+        titles = []
+        for p in proj_entries:
+            if isinstance(p, dict) and p.get('title'):
+                titles.append(p.get('title'))
+            elif isinstance(p, str):
+                titles.append(p)
+        if len(titles) >= 2:
+            strengths.append(f"Strong project portfolio with {len(proj_entries)} projects, including {titles[0]} and {titles[1]}")
+        elif len(titles) == 1:
+            strengths.append(f"Project portfolio featuring {titles[0]}")
+        else:
+            strengths.append("Includes a dedicated Projects section showcasing applied skills")
 
-    validated = skill_validation.get('validated_skills', [])
-    if len(validated) >= 3:
-        strengths.append(f"{len(validated)} skills are backed by project/experience evidence")
+    # 3. Education
+    edu_entries = parsed_resume.get('education', [])
+    if edu_entries:
+        degrees = [e.get('degree') for e in edu_entries if e.get('degree')]
+        insts = [e.get('institution') for e in edu_entries if e.get('institution')]
+        if degrees and insts:
+            # Clean up casing
+            deg_clean = str(degrees[0]).title()
+            inst_clean = str(insts[0]).title()
+            strengths.append(f"Academic foundation in {deg_clean} from {inst_clean}")
+        elif insts:
+            inst_clean = str(insts[0]).title()
+            strengths.append(f"Academic background from {inst_clean}")
+        else:
+            strengths.append("Education section is present with academic history")
 
-    if scores.get('formatting_score', 0) >= 16:
-        strengths.append("Well-formatted and ATS-friendly structure")
-    if scores.get('content_score', 0) >= 20:
-        strengths.append("Content quality is high with measurable achievements")
+    # 4. Technical Skills
+    if skills:
+        top_skills = skills[:5]
+        strengths.append(f"Broad technical skill set of {len(skills)} skills, featuring {', '.join(top_skills)}")
+
+    # 5. Certifications
+    certs = parsed_resume.get('certifications', [])
+    if certs:
+        strengths.append(f"Holds professional certifications, including {', '.join(certs[:3])}")
+
+    # 6. Action Verbs
+    if action_verbs:
+        strengths.append(f"Bullet points use strong action verbs like {', '.join(action_verbs[:4])}")
+
+    # 7. Formatting & ATS
+    if scores.get('formatting_score', 0) >= 14:
+        strengths.append("Consistent ATS-friendly layout with clear section dividers and bullet points")
+
+    # 8. Quantified Achievements
+    if scores.get('content_score', 0) >= 16:
+        strengths.append("Includes measurable outcomes and metrics to quantify job and project impact")
+
+    # Fallback to make sure it's never empty
+    if not strengths:
+        strengths.append("Resume contains core sections (Skills, Experience, Education) required by recruiters")
 
     return strengths

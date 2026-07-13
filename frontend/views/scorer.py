@@ -40,7 +40,36 @@ def _show_backend_error(exc: Exception) -> None:
             detail = exc.response.json().get("detail", exc.response.text)
         except ValueError:
             detail = exc.response.text
-        st.error(f"Backend returned {exc.response.status_code}: {detail}")
+        
+        detail_str = str(detail)
+        # Check if the error is related to PDF parsing, scanned PDFs, or OCR/Tesseract/pdfplumber/PyPDF2
+        # Exclude standard file validation messages (like file size limits or empty file warnings)
+        is_parser_error = any(
+            kw in detail_str.lower()
+            for kw in [
+                "scanned", "ocr", "tesseract", "selectable", 
+                "pdfplumber", "pypdf2", "parsing failed"
+            ]
+        ) or ("could not read or parse" in detail_str.lower() and "exceeds" not in detail_str.lower() and "empty" not in detail_str.lower())
+        
+        if is_parser_error:
+            st.markdown("""
+<div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+    <h3 style="color: #991b1b; margin-top: 0; margin-bottom: 0.5rem; font-size: 1.25rem;">🔍 Scanned PDF detected</h3>
+    <p style="color: #7f1d1d; margin-bottom: 0.8rem; font-weight: 500;">
+        This resume appears to be a scanned or image-based PDF.
+    </p>
+    <p style="color: #7f1d1d; margin-bottom: 0.8rem;">
+        Currently <strong>ATS Resume Analyzer</strong> supports only text-based PDFs.<br>
+        <em>Support for scanned PDFs with OCR is an upcoming feature.</em>
+    </p>
+    <p style="color: #7f1d1d; margin-bottom: 0; font-size: 0.9rem;">
+        Please upload a text-based PDF exported directly from Word, Google Docs, Overleaf, Canva (with selectable text), or another resume builder.
+    </p>
+</div>
+""", unsafe_allow_html=True)
+        else:
+            st.error(f"Backend returned {exc.response.status_code}: {detail}")
     else:
         st.error(f"Unexpected error: {exc}")
 
@@ -74,6 +103,18 @@ def _render_upload_area(analysis_mode: str):
             type=["pdf", "doc", "docx"],
             help="Supported: PDF, DOC, DOCX (max 5 MB)",
             key="resume_upload",
+        )
+        st.markdown(
+            "<div style='font-size: 0.85rem; color: #64748b; margin-top: -8px; margin-bottom: 8px;'>"
+            "📄 Supported format: Text-based PDF resumes only. Scanned/image-based PDFs are not supported yet."
+            "</div>",
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            "<div style='font-size: 0.8rem; color: #94a3b8; font-style: italic;'>"
+            "Tip: Export your resume directly from Microsoft Word, Google Docs, Overleaf, or any resume builder as PDF."
+            "</div>",
+            unsafe_allow_html=True
         )
         if resume_file:
             st.success(f"✅ {resume_file.name} ({resume_file.size / 1024:.1f} KB)")
