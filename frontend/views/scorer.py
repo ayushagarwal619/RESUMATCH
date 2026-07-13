@@ -10,11 +10,6 @@ from frontend.components.dashboard import display_results_dashboard
 def _read_jd(jd_file, jd_text: str) -> str:
     """
     Turn whatever the user provided into a plain JD string for the backend.
-
-    For .txt files we decode in-process — that's a trivial operation, no need
-    for a backend round-trip. For PDF/DOCX, we'd need the backend's parser;
-    we don't have a public endpoint for that, so we ask the user to paste text
-    instead for non-txt JDs.
     """
     if jd_text:
         return jd_text.strip()
@@ -42,8 +37,6 @@ def _show_backend_error(exc: Exception) -> None:
             detail = exc.response.text
         
         detail_str = str(detail)
-        # Check if the error is related to PDF parsing, scanned PDFs, or OCR/Tesseract/pdfplumber/PyPDF2
-        # Exclude standard file validation messages (like file size limits or empty file warnings)
         is_parser_error = any(
             kw in detail_str.lower()
             for kw in [
@@ -54,17 +47,14 @@ def _show_backend_error(exc: Exception) -> None:
         
         if is_parser_error:
             st.markdown("""
-<div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
-    <h3 style="color: #991b1b; margin-top: 0; margin-bottom: 0.5rem; font-size: 1.25rem;">🔍 Scanned PDF detected</h3>
-    <p style="color: #7f1d1d; margin-bottom: 0.8rem; font-weight: 500;">
+<div class="glass-card animate-glow" style="border-left: 4px solid #EF4444; border-color: #EF4444; padding: 1.8rem; margin: 1.5rem 0;">
+    <h3 style="color: #EF4444; margin-top: 0; margin-bottom: 0.8rem; font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">🔍 Scanned PDF detected</h3>
+    <p style="color: var(--text-primary); margin-bottom: 1rem; font-weight: 600;">
         This resume appears to be a scanned or image-based PDF.
     </p>
-    <p style="color: #7f1d1d; margin-bottom: 0.8rem;">
-        Currently <strong>ATS Resume Analyzer</strong> supports only text-based PDFs.<br>
-        <em>Support for scanned PDFs with OCR is an upcoming feature.</em>
-    </p>
-    <p style="color: #7f1d1d; margin-bottom: 0; font-size: 0.9rem;">
-        Please upload a text-based PDF exported directly from Word, Google Docs, Overleaf, Canva (with selectable text), or another resume builder.
+    <p style="color: var(--text-secondary); margin-bottom: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+        Currently <strong>RESUMATCH</strong> supports only text-based PDFs. OCR support is currently unavailable but is coming soon.<br>
+        Please upload a text-based PDF, DOC, or DOCX.
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -97,24 +87,21 @@ def _render_upload_area(analysis_mode: str):
     left, right = st.columns(2)
 
     with left:
-        st.markdown("### 📄 Upload Resume")
+        st.markdown("""
+        <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
+            <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">📄 Upload Resume</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+                Supported: <strong>Text-based PDF, DOC, DOCX</strong>.<br>
+                Scanned PDFs are currently unsupported.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
         resume_file = st.file_uploader(
-            "Choose your resume file",
+            "Upload your file here",
             type=["pdf", "doc", "docx"],
-            help="Supported: PDF, DOC, DOCX (max 5 MB)",
+            label_visibility="collapsed",
             key="resume_upload",
-        )
-        st.markdown(
-            "<div style='font-size: 0.85rem; color: #64748b; margin-top: -8px; margin-bottom: 8px;'>"
-            "📄 Supported format: Text-based PDF resumes only. Scanned/image-based PDFs are not supported yet."
-            "</div>",
-            unsafe_allow_html=True
-        )
-        st.markdown(
-            "<div style='font-size: 0.8rem; color: #94a3b8; font-style: italic;'>"
-            "Tip: Export your resume directly from Microsoft Word, Google Docs, Overleaf, or any resume builder as PDF."
-            "</div>",
-            unsafe_allow_html=True
         )
         if resume_file:
             st.success(f"✅ {resume_file.name} ({resume_file.size / 1024:.1f} KB)")
@@ -124,11 +111,20 @@ def _render_upload_area(analysis_mode: str):
 
     with right:
         if analysis_mode == "Job Description Comparison":
-            st.markdown("### 📋 Job Description")
+            st.markdown("""
+            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
+                <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">📋 Job Description</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+                    Compare your resume against a specific role to calculate keywords and skills gap analysis.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
             jd_method = st.radio(
                 "Input method:",
                 ["Paste Text", "Upload .txt File"],
                 horizontal=True,
+                label_visibility="collapsed",
                 key="jd_input_method",
             )
             if jd_method == "Upload .txt File":
@@ -142,25 +138,35 @@ def _render_upload_area(analysis_mode: str):
             else:
                 jd_text = st.text_area(
                     "Paste job description text:",
-                    height=200,
-                    placeholder="Paste the JD here...",
+                    height=130,
+                    placeholder="Paste the Job Description here...",
+                    label_visibility="collapsed",
                     key="jd_text",
                 )
                 if jd_text:
                     st.success(f"✅ {len(jd_text)} characters")
         else:
-            st.markdown("### 📋 Job Description")
-            st.info("Switch to 'Job Description Comparison' mode to enable JD matching.")
+            st.markdown("""
+            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
+                <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">📋 Job Description</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+                    JD Comparison is disabled. Switch to <strong>Job Description Comparison</strong> mode to paste or upload requirements.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
 
     return resume_file, jd_file, jd_text
 
 
 def _render_export_buttons(analysis: dict) -> None:
-    st.markdown("### 📥 Export Results")
+    st.markdown("""
+    <div style="margin-top: 3rem; margin-bottom: 1.5rem;">
+        <h3 style="color: white; font-size: 1.4rem; font-weight: 700;">📥 Export Evaluation Results</h3>
+    </div>
+    """, unsafe_allow_html=True)
     c1, c2 = st.columns(2)
 
     with c1:
-        # Lazy: only call the backend the first time the user clicks expand.
         if st.button("📑 Generate PDF Report", use_container_width=True, type="primary"):
             try:
                 with st.spinner("Generating PDF on backend..."):
@@ -174,7 +180,7 @@ def _render_export_buttons(analysis: dict) -> None:
 
         if "scorer_pdf_bytes" in st.session_state:
             st.download_button(
-                "⬇️ Download PDF",
+                "⬇️ Download PDF Report",
                 data=st.session_state["scorer_pdf_bytes"],
                 file_name="ats_resume_report.pdf",
                 mime="application/pdf",
@@ -194,55 +200,55 @@ def _render_export_buttons(analysis: dict) -> None:
 
 
 def render() -> None:
-    st.title("🎯 ATS Resume Scorer")
-    st.markdown("Upload your resume — and optionally a job description — for a comprehensive analysis.")
+    st.markdown("""
+    <div style="margin-bottom: 2rem;">
+        <h1 style="margin: 0; background: linear-gradient(135deg, #FFFFFF 40%, #C084FC 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 2.5rem; letter-spacing: -0.02em;">Analyze Resume</h1>
+        <p style="margin: 6px 0 0 0; font-size: 1.05rem; color: var(--text-secondary); font-weight: 500;">Match. Optimize. Get Hired.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     with st.sidebar:
-        st.markdown("---")
+        st.markdown("<div style='margin: 1.5rem 0 1rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
         st.markdown("## 📊 Analysis Options")
         st.info(
             "**General ATS Score**: resume only — overall compatibility.\n\n"
             "**JD Comparison**: resume + job description — targeted match analysis."
         )
 
-    st.markdown("---")
-
     analysis_mode = st.radio(
         "Select Analysis Mode:",
         ["General ATS Score", "Job Description Comparison"],
         horizontal=True,
+        label_visibility="collapsed"
     )
 
-    st.markdown("---")
+    st.markdown("<div style='margin: 1.5rem 0;'></div>", unsafe_allow_html=True)
 
     resume_file, jd_file, jd_text = _render_upload_area(analysis_mode)
 
-    st.markdown("---")
+    st.markdown("<div style='margin: 2rem 0;'></div>", unsafe_allow_html=True)
 
     if not resume_file:
-        st.info("👆 Upload your resume to begin.")
-        # If we have a prior result in session, render it again.
+        st.info("👆 Upload your resume to begin the evaluation.")
         if st.session_state.get("scorer_analysis"):
             display_results_dashboard(st.session_state["scorer_analysis"])
         return
 
     access_token = st.session_state.get("access_token")
     if not access_token:
-        st.warning("⚠️ Sign in from the sidebar to analyze a resume.")
+        st.warning("⚠️ Please sign in from the sidebar to start analyzing your resume.")
         return
 
-    _, mid, _ = st.columns([1, 2, 1])
+    _, mid, _ = st.columns([1.2, 1.6, 1.2])
     with mid:
-        analyze = st.button("🚀 Analyze Resume", use_container_width=True, type="primary")
+        analyze = st.button("⚡ Run RESUMATCH AI Scorer", use_container_width=True, type="primary")
 
     if not analyze:
-        # Re-show previous result on rerun (e.g. after PDF generation).
         if st.session_state.get("scorer_analysis"):
             display_results_dashboard(st.session_state["scorer_analysis"])
             _render_export_buttons(st.session_state["scorer_analysis"])
         return
 
-    # Fresh analysis — drop any cached PDF/result.
     st.session_state.pop("scorer_pdf_bytes", None)
     st.session_state.pop("scorer_analysis", None)
 

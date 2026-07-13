@@ -1,9 +1,6 @@
 from typing import Any, Dict, List
-
 import streamlit as st
-
 from frontend.components._helpers import get_severity_style
-
 
 SEVERITY_ORDER = ["critical", "high", "medium", "low"]
 
@@ -28,28 +25,31 @@ def _render_issue(issue: Dict[str, Any]) -> None:
 
     st.markdown(
         f"""
-        <div style="border-left:4px solid {text_color}; background-color:{bg_color};
-                    padding:0.75rem 1rem; border-radius:6px; margin-bottom:0.5rem;">
-            <strong style="color:{text_color};">{icon} {title}</strong>
-            <span style="color:#666; margin-left:0.5rem; font-size:0.85rem;">{impact}</span>
+        <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1.2rem; border-left: 4px solid {text_color}; border-color: {text_color};">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.4rem;">{icon}</span>
+                    <h4 style="margin: 0; color: white; font-size: 1.1rem; font-weight: 700;">{title}</h4>
+                </div>
+                <span style="font-size: 0.75rem; font-weight: bold; background: {bg_color}; color: {text_color}; padding: 2px 10px; border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.05);">{impact}</span>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0 0 1rem 0;">{explanation}</p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    with st.expander("Details", expanded=False):
-        if explanation:
-            st.markdown(f"**What's happening:** {explanation}")
+    with st.expander("🛠️ Action Plan & Code Example", expanded=False):
         if where:
-            st.markdown(f"**Where it appears:** {where}")
+            st.markdown(f"📍 **Where it appears:** {where}")
         if how_to_fix:
-            st.markdown(f"**How to fix:** {how_to_fix}")
+            st.markdown(f"💡 **How to fix:** {how_to_fix}")
         if action_items:
-            st.markdown("**Action items:**")
+            st.markdown("📋 **Action checklist:**")
             for item in action_items:
                 st.markdown(f"- {item}")
         if example:
-            st.markdown("**Example improvement:**")
+            st.markdown("📝 **Example improvement:**")
             st.code(example, language="text")
 
 
@@ -57,6 +57,9 @@ def display_detailed_feedback(analysis: Dict[str, Any]) -> None:
     issues = analysis.get("detailed_feedback") or []
     if not issues:
         return  # backend produced no per-issue feedback this run
+
+    # Filter out score breakdown title if present in issues
+    issues = [iss for iss in issues if iss.get("issue_title") != "ATS Score Breakdown & Explanation"]
 
     st.markdown("### 🔍 Detailed Feedback")
     st.caption(f"{len(issues)} issue(s) flagged — grouped by severity.")

@@ -4,10 +4,10 @@ from typing import Tuple
 def get_score_color(score: float) -> Tuple[str, str]:
     """Return (text_color, background_color) for a 0–100 score."""
     if score >= 80:
-        return "#2e7d32", "#e8f5e9"  # green
+        return "#10B981", "rgba(16, 185, 129, 0.15)"  # green
     if score >= 60:
-        return "#f57c00", "#fff3e0"  # orange
-    return "#c62828", "#ffebee"      # red
+        return "#F59E0B", "rgba(245, 158, 11, 0.15)"  # orange
+    return "#EF4444", "rgba(239, 68, 68, 0.15)"      # red
 
 
 def get_score_emoji(score: float) -> str:
@@ -26,11 +26,10 @@ def get_score_emoji(score: float) -> str:
 def get_severity_style(severity: str) -> Tuple[str, str, str]:
     """
     Return (icon, text_color, background_color) for an IssueDetail severity.
-    Matches the values the backend emits in `detailed_feedback[].severity_level`.
     """
     level = (severity or "").lower()
     if level in ("critical", "high"):
-        return "🔴", "#c62828", "#ffebee"
+        return "🔴", "#EF4444", "rgba(239, 68, 68, 0.15)"
     if level == "medium":
-        return "🟡", "#f57c00", "#fff3e0"
-    return "🟢", "#2e7d32", "#e8f5e9"
+        return "🟡", "#F59E0B", "rgba(245, 158, 11, 0.15)"
+    return "🟢", "#10B981", "rgba(16, 185, 129, 0.15)"

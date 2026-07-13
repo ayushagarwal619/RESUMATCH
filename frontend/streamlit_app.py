@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Configure page
 st.set_page_config(
-    page_title="ATS Resume Scorer",
+    page_title="RESUMATCH — Match. Optimize. Get Hired.",
     page_icon="🎯",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -47,30 +47,87 @@ if (
         st.session_state.user_email    = result["email"]
         st.rerun()
 
+# Initialize session state for view management and theme
+if 'current_view' not in st.session_state:
+    st.session_state.current_view = 'landing'
+if 'theme' not in st.session_state:
+    st.session_state.theme = 'dark'
+
 #Load custom CSS
 def load_css():
     try:
         css_path = Path(__file__).parent / 'assets' / 'styles.css'
         with open(css_path, 'r') as f:
-            return f'<style>{f.read()}</style>'
+            css_content = f.read()
+            
+        theme = st.session_state.get('theme', 'dark')
+        if theme == 'light':
+            variables = """
+            :root {
+                --bg-main: #F7F9FC;
+                --bg-secondary: #EDF2F7;
+                --bg-card: #FFFFFF;
+                --accent-primary: #5B5BF7;
+                --accent-secondary: #3A86FF;
+                --accent-highlight: #00A6FF;
+                --color-success: #22C55E;
+                --color-warning: #F59E0B;
+                --color-danger: #EF4444;
+                --text-primary: #111827;
+                --text-secondary: #4B5563;
+                --text-muted: #9CA3AF;
+                --border-soft: 1px solid #E5E7EB;
+                --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.04);
+                --grad-primary: linear-gradient(135deg, #5B5BF7 0%, #3A86FF 100%);
+                --bg-sidebar: #FFFFFF;
+                --glow-color: rgba(91, 91, 247, 0.08);
+                --border-glow: 1px solid #E5E7EB;
+            }
+            """
+        else:
+            variables = """
+            :root {
+                --bg-main: #070B18;
+                --bg-secondary: #0E1324;
+                --bg-card: #131B30;
+                --accent-primary: #7C5CFF;
+                --accent-secondary: #3BA8FF;
+                --accent-highlight: #00E5FF;
+                --color-success: #22C55E;
+                --color-warning: #F59E0B;
+                --color-danger: #EF4444;
+                --text-primary: #FFFFFF;
+                --text-secondary: #A8B3CF;
+                --text-muted: #6B7280;
+                --border-soft: 1px solid rgba(255, 255, 255, 0.08);
+                --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.5);
+                --grad-primary: linear-gradient(135deg, #7C5CFF 0%, #3BA8FF 100%);
+                --bg-sidebar: #0E1324;
+                --glow-color: rgba(124, 92, 255, 0.25);
+                --border-glow: 1px solid rgba(124, 92, 255, 0.3);
+            }
+            """
+        return f'<style>{variables}\n{css_content}</style>'
     except FileNotFoundError:
         return ''
 
 st.markdown(load_css(), unsafe_allow_html=True)
 
-# Initialize session state for view management
-if 'current_view' not in st.session_state:
-    st.session_state.current_view = 'landing'
-
 # Sidebar navigation
 with st.sidebar:
-    st.markdown("## Navigation")
+    # Premium branding header
+    st.markdown("""
+    <div style="text-align: center; padding: 1.5rem 0 2rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 2rem;">
+        <h2 style="margin: 0; background: linear-gradient(135deg, #C084FC 0%, #6366F1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 1.9rem; letter-spacing: -0.03em; font-family: 'Plus Jakarta Sans', sans-serif;">RESUMATCH</h2>
+        <p style="margin: 4px 0 0 0; font-size: 0.75rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; font-family: 'Plus Jakarta Sans', sans-serif;">Match. Optimize. Get Hired.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     if st.button("🏠 Home", use_container_width=True):
         st.session_state.current_view = 'landing'
         st.rerun()
     
-    if st.button("🎯 ATS Scorer", use_container_width=True):
+    if st.button("🎯 Analyze Resume", use_container_width=True):
         st.session_state.current_view = 'scorer'
         st.rerun()
     
@@ -82,7 +139,7 @@ with st.sidebar:
         st.session_state.current_view = 'resources'
         st.rerun()
     
-    st.markdown("---")
+    st.markdown("<div style='margin: 2rem 0 1rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
     st.markdown("### 👤 Account")
 
     from frontend.services import supabase_client

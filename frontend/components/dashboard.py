@@ -1,5 +1,4 @@
 from typing import Any, Dict
-
 import streamlit as st
 
 from frontend.components.score_display import display_overall_score, display_score_breakdown
@@ -14,36 +13,32 @@ from frontend.components.recommendations import display_recommendations
 def display_results_dashboard(analysis: Dict[str, Any]) -> None:
     """
     Render the full results page from one backend response dict.
-
-    `analysis` is the JSON body returned by POST /api/v1/analyze-resume
-    (i.e. an AnalysisResponse). No transformation is done here — every
-    section reads the fields it needs directly.
     """
     display_overall_score(analysis)
-    st.markdown("---")
+    st.markdown("<div style='margin: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
 
     display_score_breakdown(analysis)
-    st.markdown("---")
+    st.markdown("<div style='margin: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
 
     display_strengths(analysis.get("strengths") or [])
-    st.markdown("---")
+    st.markdown("<div style='margin: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
 
     display_critical_issues(analysis)
-    st.markdown("---")
+    st.markdown("<div style='margin: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
 
     display_skill_validation(analysis)
-    st.markdown("---")
+    st.markdown("<div style='margin: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
 
     # JD comparison only shows up if the user actually submitted a JD.
     jd_comparison = analysis.get("jd_comparison") or analysis.get("jd_match_analysis")
     if jd_comparison:
         display_jd_comparison(jd_comparison)
-        st.markdown("---")
+        st.markdown("<div style='margin: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
 
     display_detailed_feedback(analysis)
-    st.markdown("---")
+    st.markdown("<div style='margin: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
 
     display_action_items(analysis)
-    st.markdown("---")
+    st.markdown("<div style='margin: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
 
     display_recommendations(analysis)
