@@ -1,5 +1,14 @@
 import streamlit as st
 
+def get_image_base64(path):
+    import base64
+    from pathlib import Path
+    try:
+        data = Path(path).read_bytes()
+        return base64.b64encode(data).decode()
+    except Exception:
+        return ""
+
 def html_inject(html_str: str) -> None:
     import re
     clean = re.sub(r'\s+', ' ', html_str).strip()
@@ -19,9 +28,17 @@ def render():
     left_col, right_col = st.columns([1.2, 0.9])
     
     with left_col:
+        # Side-by-side logo icon and text
+        logo_base64 = get_image_base64("frontend/assets/logo_icon.jpg")
+        html_inject(f"""
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 1.5rem;">
+            <img src="data:image/jpeg;base64,{logo_base64}" style="width: 34px; height: 34px; border-radius: 6px;" class="logo-img" />
+            <span style="font-weight: 800; font-size: 1.4rem; letter-spacing: -0.02em; color: var(--text-primary); font-family: 'Plus Jakarta Sans', sans-serif;">RESUMATCH</span>
+        </div>
+        """)
         # Left-column text content
         html_inject("""
-        <div style="padding-top: 1.5rem;">
+        <div style="padding-top: 0.5rem;">
             <div class="hero-badge">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="m12 3-1.912 5.886H3.82l4.816 3.498L6.724 18.27 12 14.772l5.276 3.498-1.912-5.886 4.816-3.498h-6.268L12 3z"/></svg>
                 AI-POWERED ATS ANALYSIS

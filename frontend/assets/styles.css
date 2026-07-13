@@ -896,3 +896,12 @@ div[data-element-id="theme_toggle_btn"] button div {
     align-items: center !important;
     vertical-align: middle !important;
 }
+
+/* Official Logo image hover transitions */
+.logo-img {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.logo-img:hover {
+    transform: scale(1.03) !important;
+    filter: drop-shadow(0 0 8px var(--glow-color)) !important;
+}

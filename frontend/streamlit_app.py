@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # Configure page
 st.set_page_config(
     page_title="RESUMATCH — Match. Optimize. Get Hired.",
-    page_icon="🎯",
+    page_icon="frontend/assets/logo.jpg",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -123,6 +123,15 @@ def html_inject(html_str: str) -> None:
     clean = re.sub(r'\s+', ' ', html_str).strip()
     st.markdown(clean, unsafe_allow_html=True)
 
+def get_image_base64(path):
+    import base64
+    from pathlib import Path
+    try:
+        data = Path(path).read_bytes()
+        return base64.b64encode(data).decode()
+    except Exception:
+        return ""
+
 # Initialize session state for view management and theme
 if 'current_view' not in st.session_state:
     st.session_state.current_view = 'landing'
@@ -131,11 +140,12 @@ if 'theme' not in st.session_state:
 
 # Sidebar navigation
 with st.sidebar:
-    # Premium branding header
-    html_inject("""
-    <div style="text-align: center; padding: 1.5rem 0 2rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 2rem;">
-        <h2 style="margin: 0; background: linear-gradient(135deg, #C084FC 0%, #6366F1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 1.9rem; letter-spacing: -0.03em; font-family: 'Plus Jakarta Sans', sans-serif;">RESUMATCH</h2>
-        <p style="margin: 4px 0 0 0; font-size: 0.75rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; font-family: 'Plus Jakarta Sans', sans-serif;">Match. Optimize. Get Hired.</p>
+    # Premium branding header using official logo icon
+    logo_base64 = get_image_base64("frontend/assets/logo_icon.jpg")
+    html_inject(f"""
+    <div style="display: flex; align-items: center; gap: 14px; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 1.5rem;">
+        <img src="data:image/jpeg;base64,{logo_base64}" style="width: 38px; height: 38px; border-radius: 8px; transition: transform 0.2s;" class="logo-img" />
+        <span style="font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em; background: linear-gradient(135deg, #C084FC 0%, #6366F1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif;">RESUMATCH</span>
     </div>
     """)
     
