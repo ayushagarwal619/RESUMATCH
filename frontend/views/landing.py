@@ -147,57 +147,132 @@ def render():
 
     # Section 3: Why Choose RESUMATCH? (Features Section)
     html_inject("""
-    <div class="section-title">Why Choose RESUMATCH?</div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; margin-bottom: 5rem;">
-        <div class="glass-card" style="padding: 2.2rem;">
-            <div style="margin-bottom: 1.2rem; color: var(--accent-primary);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <div style="text-align: center; margin-top: 4rem; margin-bottom: 2.5rem;">
+        <h2 style="font-size: 2.3rem; font-weight: 800; color: var(--text-primary); margin: 0; letter-spacing: -0.02em;">✦ Why Choose <span style="background: linear-gradient(135deg, #C084FC 0%, #6366F1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RESUMATCH</span>?</h2>
+        <p style="color: var(--text-secondary); font-size: 1.05rem; margin-top: 8px; font-weight: 500;">Powerful features designed to enhance your resume and boost your career</p>
+    </div>
+    
+    <div class="why-resumatch-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card-premium">
+            <div class="feature-icon-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             </div>
-            <h3 style="color: var(--text-primary); font-size: 1.35rem; margin-bottom: 0.8rem; font-weight: 700;">Comprehensive Analysis</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">Get scored across 5 key dimensions: formatting, keywords, content quality, validation, and compatibility.</p>
+            <div class="feature-content-box">
+                <h3 class="feature-card-title">Comprehensive Analysis</h3>
+                <p class="feature-card-desc">Get scored across 5 key dimensions: formatting, keywords, content quality, validation, and compatibility.</p>
+                <div class="feature-card-tag">✦ 5 Dimensions Covered</div>
+            </div>
+            <div class="feature-chevron-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
         </div>
-        <div class="glass-card" style="padding: 2.2rem;">
-            <div style="margin-bottom: 1.2rem; color: var(--accent-primary);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        
+        <!-- Feature 2 -->
+        <div class="feature-card-premium">
+            <div class="feature-icon-container" style="background: linear-gradient(135deg, #3B82F6 0%, #00E5FF 100%);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 11 2 2 4-4"/></svg>
             </div>
-            <h3 style="color: var(--text-primary); font-size: 1.35rem; margin-bottom: 0.8rem; font-weight: 700;">Smart Skill Validation</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">Verifies your skills through project context and work history matches using semantic semantic checking.</p>
+            <div class="feature-content-box">
+                <h3 class="feature-card-title">Smart Skill Validation</h3>
+                <p class="feature-card-desc">Verifies your skills through project context and work history matches using semantic semantic checking.</p>
+                <div class="feature-card-tag">✓ AI-Powered Matching</div>
+            </div>
+            <div class="feature-chevron-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
         </div>
-        <div class="glass-card" style="padding: 2.2rem;">
-            <div style="margin-bottom: 1.2rem; color: var(--accent-primary);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.886H3.82l4.816 3.498L6.724 18.27 12 14.772l5.276 3.498-1.912-5.886 4.816-3.498h-6.268L12 3z"/></svg>
+        
+        <!-- Feature 3 -->
+        <div class="feature-card-premium">
+            <div class="feature-icon-container" style="background: linear-gradient(135deg, #7C5CFF 0%, #C084FC 100%);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             </div>
-            <h3 style="color: var(--text-primary); font-size: 1.35rem; margin-bottom: 0.8rem; font-weight: 700;">Actionable Insights</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">Receive specific, prioritized action items to optimize your resume and win more interviews.</p>
+            <div class="feature-content-box">
+                <h3 class="feature-card-title">Actionable Insights</h3>
+                <p class="feature-card-desc">Receive specific, prioritized action items to optimize your resume and win more interviews.</p>
+                <div class="feature-card-tag">★ Actionable & Prioritized</div>
+            </div>
+            <div class="feature-chevron-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
         </div>
-        <div class="glass-card" style="padding: 2.2rem;">
-            <div style="margin-bottom: 1.2rem; color: var(--accent-primary);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        
+        <!-- Feature 4 -->
+        <div class="feature-card-premium">
+            <div class="feature-icon-container" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <h3 style="color: var(--text-primary); font-size: 1.35rem; margin-bottom: 0.8rem; font-weight: 700;">Privacy First</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">All evaluations run securely. Your personal details and resume data never leave your control.</p>
+            <div class="feature-content-box">
+                <h3 class="feature-card-title">Privacy First</h3>
+                <p class="feature-card-desc">All evaluations run securely. Your personal details and resume data never leave your control.</p>
+                <div class="feature-card-tag">🔒 100% Secure & Private</div>
+            </div>
+            <div class="feature-chevron-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
         </div>
     </div>
     """)
 
     # Section 4: How RESUMATCH Works (timeline)
     html_inject("""
-    <div class="section-title">How RESUMATCH Works</div>
-    <div class="timeline-container">
-        <div class="timeline-step">
-            <div class="step-num">1</div>
-            <h3 style="color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.6rem; font-weight: 700;">Upload Resume</h3>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.5;">Upload your resume in PDF, DOC, or DOCX formats securely.</p>
+    <div style="text-align: center; margin-top: 5rem; margin-bottom: 2.5rem;">
+        <h2 style="font-size: 2.3rem; font-weight: 800; color: var(--text-primary); margin: 0; letter-spacing: -0.02em;">How <span style="background: linear-gradient(135deg, #C084FC 0%, #6366F1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RESUMATCH</span> Works</h2>
+        <p style="color: var(--text-secondary); font-size: 1.05rem; margin-top: 8px; font-weight: 500;">A simple 3-step process to transform your resume</p>
+    </div>
+    
+    <div class="works-flow-container">
+        <!-- SVG Gradient definitions -->
+        <svg width="0" height="0" style="position: absolute;">
+            <defs>
+                <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#7C5CFF" />
+                    <stop offset="100%" stop-color="#3BA8FF" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <!-- Step 1 -->
+        <div class="works-step-card">
+            <div class="works-step-num">1</div>
+            <div class="works-step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#accentGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19A3.5 3.5 0 0 0 21 15.5c0-2.79-2.54-4.5-5-4.5-.42-1.04-1.21-1.89-2.22-2.39S11.65 8 10.5 8C8 8 6 10 6 12.5c0 .35.04.7.12 1.03C4.24 14.07 3 15.89 3 18c0 2.2 1.8 4 4 4h10.5Z"/><polyline points="12 12 12 18"/><polyline points="9 15 12 12 15 15"/></svg>
+            </div>
+            <h3 style="color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.6rem; font-weight: 700; margin-top: 0;">Upload Resume</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0; line-height: 1.5;">Upload your resume in PDF, DOC, or DOCX formats securely.</p>
         </div>
-        <div class="timeline-step">
-            <div class="step-num">2</div>
-            <h3 style="color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.6rem; font-weight: 700;">AI Scan</h3>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.5;">Our custom scorer scans your projects and validates keywords.</p>
+        
+        <!-- Connector 1 -->
+        <div class="works-flow-connector">
+            <div class="connector-line"></div>
+            <div class="connector-arrow-circle">→</div>
         </div>
-        <div class="timeline-step">
-            <div class="step-num">3</div>
-            <h3 style="color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.6rem; font-weight: 700;">Optimize & Get Hired</h3>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.5;">Apply structured, prioritized fixes to increase matches.</p>
+        
+        <!-- Step 2 -->
+        <div class="works-step-card">
+            <div class="works-step-num">2</div>
+            <div class="works-step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#accentGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/></svg>
+            </div>
+            <h3 style="color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.6rem; font-weight: 700; margin-top: 0;">AI Scan</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0; line-height: 1.5;">Our custom scorer scans your projects and validates keywords.</p>
+        </div>
+        
+        <!-- Connector 2 -->
+        <div class="works-flow-connector">
+            <div class="connector-line"></div>
+            <div class="connector-arrow-circle">→</div>
+        </div>
+        
+        <!-- Step 3 -->
+        <div class="works-step-card">
+            <div class="works-step-num">3</div>
+            <div class="works-step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#accentGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5s3.19-1 5.5-2.5l5.5-5.5-8.5-8.5-5.5 5.5ZM12.5 8.5l8.5 8.5 2.5-5.5C25 6.19 23 2 23 2s-4.19 2-9.5 9.5l-1 1ZM9.5 14.5l-4-4M14.5 9.5l4 4"/></svg>
+            </div>
+            <h3 style="color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.6rem; font-weight: 700; margin-top: 0;">Optimize & Get Hired</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0; line-height: 1.5;">Apply structured, prioritized fixes to increase matches and land more interviews.</p>
         </div>
     </div>
     """)
