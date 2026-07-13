@@ -1,5 +1,5 @@
 from typing import Optional
-
+import textwrap
 import requests
 import streamlit as st
 
@@ -46,18 +46,24 @@ def _show_backend_error(exc: Exception) -> None:
         ) or ("could not read or parse" in detail_str.lower() and "exceeds" not in detail_str.lower() and "empty" not in detail_str.lower())
         
         if is_parser_error:
-            st.markdown("""
-<div class="glass-card animate-glow" style="border-left: 4px solid #EF4444; border-color: #EF4444; padding: 1.8rem; margin: 1.5rem 0;">
-    <h3 style="color: #EF4444; margin-top: 0; margin-bottom: 0.8rem; font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">🔍 Scanned PDF detected</h3>
-    <p style="color: var(--text-primary); margin-bottom: 1rem; font-weight: 600;">
-        This resume appears to be a scanned or image-based PDF.
-    </p>
-    <p style="color: var(--text-secondary); margin-bottom: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
-        Currently <strong>RESUMATCH</strong> supports only text-based PDFs. OCR support is currently unavailable but is coming soon.<br>
-        Please upload a text-based PDF, DOC, or DOCX.
-    </p>
-</div>
-""", unsafe_allow_html=True)
+            st.markdown(
+                textwrap.dedent("""
+                <div class="danger-card animate-glow" style="padding: 1.8rem; margin: 1.5rem 0;">
+                    <h3 style="color: var(--color-danger); margin-top: 0; margin-bottom: 0.8rem; font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Scanned PDF detected
+                    </h3>
+                    <p style="color: var(--text-primary); margin-bottom: 1rem; font-weight: 700;">
+                        This resume appears to be a scanned or image-based PDF.
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+                        Currently <strong>RESUMATCH</strong> supports only text-based PDFs. OCR support is currently unavailable but is coming soon.<br>
+                        Please upload a text-based PDF, DOC, or DOCX.
+                    </p>
+                </div>
+                """),
+                unsafe_allow_html=True
+            )
         else:
             st.error(f"Backend returned {exc.response.status_code}: {detail}")
     else:
@@ -87,15 +93,21 @@ def _render_upload_area(analysis_mode: str):
     left, right = st.columns(2)
 
     with left:
-        st.markdown("""
-        <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
-            <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">📄 Upload Resume</h3>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                Supported: <strong>Text-based PDF, DOC, DOCX</strong>.<br>
-                Scanned PDFs are currently unsupported.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            textwrap.dedent("""
+            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
+                <h3 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Upload Resume
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+                    Supported: <strong>Text-based PDF, DOC, DOCX</strong>.<br>
+                    Scanned PDFs are currently unsupported.
+                </p>
+            </div>
+            """),
+            unsafe_allow_html=True
+        )
         
         resume_file = st.file_uploader(
             "Upload your file here",
@@ -111,14 +123,20 @@ def _render_upload_area(analysis_mode: str):
 
     with right:
         if analysis_mode == "Job Description Comparison":
-            st.markdown("""
-            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
-                <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">📋 Job Description</h3>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                    Compare your resume against a specific role to calculate keywords and skills gap analysis.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                textwrap.dedent("""
+                <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
+                    <h3 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Job Description
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+                        Compare your resume against a specific role to calculate keywords and skills gap analysis.
+                    </p>
+                </div>
+                """),
+                unsafe_allow_html=True
+            )
             
             jd_method = st.radio(
                 "Input method:",
@@ -146,28 +164,37 @@ def _render_upload_area(analysis_mode: str):
                 if jd_text:
                     st.success(f"✅ {len(jd_text)} characters")
         else:
-            st.markdown("""
-            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
-                <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">📋 Job Description</h3>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                    JD Comparison is disabled. Switch to <strong>Job Description Comparison</strong> mode to paste or upload requirements.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                textwrap.dedent("""
+                <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
+                    <h3 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Job Description
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+                        JD Comparison is disabled. Switch to <strong>Job Description Comparison</strong> mode to paste or upload requirements.
+                    </p>
+                </div>
+                """),
+                unsafe_allow_html=True
+            )
 
     return resume_file, jd_file, jd_text
 
 
 def _render_export_buttons(analysis: dict) -> None:
-    st.markdown("""
-    <div style="margin-top: 3rem; margin-bottom: 1.5rem;">
-        <h3 style="color: white; font-size: 1.4rem; font-weight: 700;">📥 Export Evaluation Results</h3>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        textwrap.dedent("""
+        <div style="margin-top: 3rem; margin-bottom: 1.5rem;">
+            <h3 style="color: var(--text-primary); font-size: 1.4rem; font-weight: 800;">📥 Export Evaluation Results</h3>
+        </div>
+        """),
+        unsafe_allow_html=True
+    )
     c1, c2 = st.columns(2)
 
     with c1:
-        if st.button("📑 Generate PDF Report", use_container_width=True, type="primary"):
+        if st.button("📑 Generate PDF Report", key="btn_gen_pdf", use_container_width=True, type="primary"):
             try:
                 with st.spinner("Generating PDF on backend..."):
                     pdf_bytes = api_client.generate_pdf(
@@ -200,12 +227,15 @@ def _render_export_buttons(analysis: dict) -> None:
 
 
 def render() -> None:
-    st.markdown("""
-    <div style="margin-bottom: 2rem;">
-        <h1 style="margin: 0; background: linear-gradient(135deg, #FFFFFF 40%, #C084FC 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 2.5rem; letter-spacing: -0.02em;">Analyze Resume</h1>
-        <p style="margin: 6px 0 0 0; font-size: 1.05rem; color: var(--text-secondary); font-weight: 500;">Match. Optimize. Get Hired.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        textwrap.dedent("""
+        <div style="margin-bottom: 2rem;">
+            <h1 style="margin: 0; background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 2.5rem; letter-spacing: -0.02em;">Analyze Resume</h1>
+            <p style="margin: 6px 0 0 0; font-size: 1.05rem; color: var(--text-secondary); font-weight: 600;">Match. Optimize. Get Hired.</p>
+        </div>
+        """),
+        unsafe_allow_html=True
+    )
 
     with st.sidebar:
         st.markdown("<div style='margin: 1.5rem 0 1rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
@@ -241,7 +271,7 @@ def render() -> None:
 
     _, mid, _ = st.columns([1.2, 1.6, 1.2])
     with mid:
-        analyze = st.button("⚡ Run RESUMATCH AI Scorer", use_container_width=True, type="primary")
+        analyze = st.button("⚡ Run RESUMATCH AI Scorer", key="btn_run_scorer", use_container_width=True, type="primary")
 
     if not analyze:
         if st.session_state.get("scorer_analysis"):

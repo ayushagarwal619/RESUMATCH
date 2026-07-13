@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
 import streamlit as st
+from frontend.components._helpers import html_inject
 
 
 def display_jd_comparison(jd_comparison: Optional[Dict[str, Any]]) -> None:
@@ -14,27 +15,24 @@ def display_jd_comparison(jd_comparison: Optional[Dict[str, Any]]) -> None:
     missing = jd_comparison.get("missing_keywords", []) or []
     gap = jd_comparison.get("skills_gap", []) or []
 
-    st.markdown(
-        f"""
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-top: 1rem; margin-bottom: 2rem;">
-            <div class="glass-card" style="text-align: center; padding: 1.5rem;">
-                <div style="font-size: 2.5rem; font-weight: 800; color: var(--accent-purple);">{match_pct:.0f}%</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-top: 4px;">Keyword Match</div>
-                <div class="shimmer-progress" style="height: 6px; margin-top: 10px;">
-                    <div class="shimmer-progress-fill" style="width: {match_pct}%; background: var(--grad-primary);"></div>
-                </div>
-            </div>
-            <div class="glass-card" style="text-align: center; padding: 1.5rem;">
-                <div style="font-size: 2.5rem; font-weight: 800; color: var(--accent-cyan);">{semantic:.0f}%</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-top: 4px;">Semantic Similarity</div>
-                <div class="shimmer-progress" style="height: 6px; margin-top: 10px;">
-                    <div class="shimmer-progress-fill" style="width: {semantic}%; background: var(--accent-cyan);"></div>
-                </div>
+    html_inject(f"""
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-top: 1rem; margin-bottom: 2rem;">
+        <div class="glass-card" style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; font-weight: 800; color: var(--accent-primary);">{match_pct:.0f}%</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-top: 4px;">Keyword Match</div>
+            <div class="shimmer-progress" style="height: 6px; margin-top: 10px;">
+                <div class="shimmer-progress-fill" style="width: {match_pct}%; background: var(--grad-primary);"></div>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        <div class="glass-card" style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; font-weight: 800; color: var(--accent-secondary);">{semantic:.0f}%</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-top: 4px;">Semantic Similarity</div>
+            <div class="shimmer-progress" style="height: 6px; margin-top: 10px;">
+                <div class="shimmer-progress-fill" style="width: {semantic}%; background: var(--accent-secondary);"></div>
+            </div>
+        </div>
+    </div>
+    """)
 
     col1, col2 = st.columns(2)
     with col1:
@@ -42,7 +40,7 @@ def display_jd_comparison(jd_comparison: Optional[Dict[str, Any]]) -> None:
             st.markdown('<div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 0;">', unsafe_allow_html=True)
             if matched:
                 for kw in matched:
-                    st.markdown(f'<span class="skill-chip skill-chip-validated">{kw}</span>', unsafe_allow_html=True)
+                    html_inject(f'<span class="skill-chip skill-chip-validated">{kw}</span>')
             else:
                 st.markdown('<span style="color: var(--text-muted);">None matched yet</span>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
@@ -52,9 +50,9 @@ def display_jd_comparison(jd_comparison: Optional[Dict[str, Any]]) -> None:
             st.markdown('<div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 0;">', unsafe_allow_html=True)
             if missing:
                 for kw in missing:
-                    st.markdown(f'<span class="skill-chip skill-chip-missing">{kw}</span>', unsafe_allow_html=True)
+                    html_inject(f'<span class="skill-chip skill-chip-missing">{kw}</span>')
             else:
-                st.markdown('<span style="color: var(--accent-green); font-weight: 600;">All key terms are present!</span>', unsafe_allow_html=True)
+                st.markdown('<span style="color: var(--color-success); font-weight: 600;">All key terms are present!</span>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
     if gap:
@@ -62,5 +60,5 @@ def display_jd_comparison(jd_comparison: Optional[Dict[str, Any]]) -> None:
         with st.expander(f"📊 Identified Skills Gaps ({len(gap)})", expanded=True):
             st.markdown('<div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 0;">', unsafe_allow_html=True)
             for skill in gap:
-                st.markdown(f'<span class="skill-chip skill-chip-partial">{skill}</span>', unsafe_allow_html=True)
+                html_inject(f'<span class="skill-chip skill-chip-partial">{skill}</span>')
             st.markdown('</div>', unsafe_allow_html=True)

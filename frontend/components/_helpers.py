@@ -33,3 +33,10 @@ def get_severity_style(severity: str) -> Tuple[str, str, str]:
     if level == "medium":
         return "🟡", "#F59E0B", "rgba(245, 158, 11, 0.15)"
     return "🟢", "#10B981", "rgba(16, 185, 129, 0.15)"
+
+
+def html_inject(html_str: str) -> None:
+    import re
+    import streamlit as st
+    clean = re.sub(r'\s+', ' ', html_str).strip()
+    st.markdown(clean, unsafe_allow_html=True)

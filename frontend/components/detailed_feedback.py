@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 import streamlit as st
-from frontend.components._helpers import get_severity_style
+from frontend.components._helpers import get_severity_style, html_inject
 
 SEVERITY_ORDER = ["critical", "high", "medium", "low"]
 
@@ -23,21 +23,18 @@ def _render_issue(issue: Dict[str, Any]) -> None:
     action_items = issue.get("action_items") or []
     example = issue.get("example_improvement", "")
 
-    st.markdown(
-        f"""
-        <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1.2rem; border-left: 4px solid {text_color}; border-color: {text_color};">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 1.4rem;">{icon}</span>
-                    <h4 style="margin: 0; color: white; font-size: 1.1rem; font-weight: 700;">{title}</h4>
-                </div>
-                <span style="font-size: 0.75rem; font-weight: bold; background: {bg_color}; color: {text_color}; padding: 2px 10px; border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.05);">{impact}</span>
+    html_inject(f"""
+    <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1.2rem; border-left: 4px solid {text_color}; border-color: {text_color};">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.4rem;">{icon}</span>
+                <h4 style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 700;">{title}</h4>
             </div>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0 0 1rem 0;">{explanation}</p>
+            <span style="font-size: 0.75rem; font-weight: bold; background: {bg_color}; color: {text_color}; padding: 2px 10px; border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.05);">{impact}</span>
         </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0 0 1rem 0;">{explanation}</p>
+    </div>
+    """)
 
     with st.expander("🛠️ Action Plan & Code Example", expanded=False):
         if where:

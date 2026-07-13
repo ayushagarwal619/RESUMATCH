@@ -1,181 +1,244 @@
 import streamlit as st
 
+def html_inject(html_str: str) -> None:
+    import re
+    clean = re.sub(r'\s+', ' ', html_str).strip()
+    st.markdown(clean, unsafe_allow_html=True)
+
 def render():
-    # Hero Title and Subtitle Block
-    st.markdown("""
-    <div class="resumatch-hero">
-        <div class="hero-badge">🤖 AI-POWERED ATS ANALYSIS</div>
-        <div class="hero-title">Optimize Your Resume.<br>Win More Interviews.</div>
-        <div class="hero-subtitle">RESUMATCH gives you deep ATS insights, skill validation, and actionable feedback to make your resume stand out to recruiters and tracking systems.</div>
+    # 1. Background Mesh Grid and Aurora Blobs
+    html_inject("""
+    <div class="bg-mesh-container">
+        <div class="mesh-grid"></div>
+        <div class="mesh-blob-1"></div>
+        <div class="mesh-blob-2"></div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
+
+    # 2. Two-Column Hero Layout
+    left_col, right_col = st.columns([1.2, 0.9])
     
-    # Hero Call-to-Action Buttons
-    col1, col2, col3, col4 = st.columns([1.2, 1.8, 1.8, 1.2])
-    with col2:
-        if st.button("🚀 Analyze Your Resume Now", use_container_width=True, type="primary"):
-            st.session_state.current_view = 'scorer'
-            st.rerun()
-    with col3:
-        if st.button("👁️ See How It Works", use_container_width=True, type="secondary"):
-            st.toast("Scroll down to see the timeline & features!")
+    with left_col:
+        # Left-column text content
+        html_inject("""
+        <div style="padding-top: 1.5rem;">
+            <div class="hero-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="m12 3-1.912 5.886H3.82l4.816 3.498L6.724 18.27 12 14.772l5.276 3.498-1.912-5.886 4.816-3.498h-6.268L12 3z"/></svg>
+                AI-POWERED ATS ANALYSIS
+            </div>
+            <h1 class="hero-title" style="font-size: clamp(2.5rem, 5.5vw, 4.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.04em;">Optimize Your Resume.<br>Win More Interviews.</h1>
+            <p class="hero-subtitle" style="font-size: clamp(1.05rem, 2.2vw, 1.35rem); line-height: 1.6; margin-bottom: 2.2rem; color: var(--text-secondary);">RESUMATCH gives you deep ATS insights, skill validation, and actionable feedback to make your resume stand out to recruiters.</p>
+        </div>
+        """)
+        
+        # Hero Buttons side-by-side
+        btn_l, btn_r = st.columns([1.3, 1])
+        with btn_l:
+            if st.button("🚀 Scan Your Resume", key="hero_btn_scan", use_container_width=True, type="primary"):
+                st.session_state.current_view = 'scorer'
+                st.rerun()
+        with btn_r:
+            if st.button("👁️ View Live Demo", key="hero_btn_demo", use_container_width=True, type="secondary"):
+                st.toast("Scan a resume below to explore the interactive results dashboard!")
+                
+        # Trust badges
+        html_inject("""
+        <div style="margin-top: 2rem; display: flex; align-items: center; gap: 20px; font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">
+            <span style="display: flex; align-items: center; gap: 6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                No Sign Up Required
+            </span>
+            <span style="display: flex; align-items: center; gap: 6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                100% Free
+            </span>
+            <span style="display: flex; align-items: center; gap: 6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Private & Secure
+            </span>
+        </div>
+        """)
+
+    with right_col:
+        # Right-column: Simulated ATS Dashboard Visual illustration
+        html_inject("""
+        <div class="glass-card floating-graphics animate-glow" style="width: 100%; max-width: 420px; margin-top: 1rem; text-align: left; padding: 2.2rem;">
+            <div class="card-badge">PRO</div>
+            <h4 style="margin: 0; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800;">ATS METRIC REPORT</h4>
+            <div style="display: flex; align-items: baseline; gap: 10px; margin: 0.8rem 0;">
+                <span style="font-size: 4.2rem; font-weight: 800; color: var(--text-primary); line-height: 1; letter-spacing: -0.04em;">95</span>
+                <span style="font-size: 1.3rem; font-weight: 700; color: var(--color-success);">Excellent</span>
+            </div>
             
-    # Floating Score Mockup Graphics
-    st.markdown("""
-    <div class="glass-card floating-graphics animate-glow" style="max-width: 440px; margin: 3rem auto 4rem auto; text-align: left;">
-        <div class="card-badge">PRO</div>
-        <h4 style="margin: 0; color: #64748B; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">ATS SCORE</h4>
-        <div style="display: flex; align-items: baseline; gap: 10px; margin: 0.6rem 0;">
-            <span style="font-size: 3.8rem; font-weight: 800; color: white; line-height: 1; letter-spacing: -0.03em;">95</span>
-            <span style="font-size: 1.3rem; font-weight: 700; color: #10B981;">Excellent</span>
-        </div>
-        
-        <div style="margin: 1.8rem 0 0.8rem 0;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #94A3B8; margin-bottom: 6px; font-weight: 500;">
-                <span>Formatting Quality</span>
-                <span>19/20</span>
+            <div style="margin: 2rem 0 1rem 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">
+                    <span>Formatting Quality</span>
+                    <span>19/20</span>
+                </div>
+                <div class="shimmer-progress"><div class="shimmer-progress-fill" style="width: 95%;"></div></div>
             </div>
-            <div class="shimmer-progress"><div class="shimmer-progress-fill" style="width: 95%;"></div></div>
-        </div>
-        
-        <div style="margin: 0.8rem 0;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #94A3B8; margin-bottom: 6px; font-weight: 500;">
-                <span>Keywords & Skills Match</span>
-                <span>24/25</span>
+            
+            <div style="margin: 1rem 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">
+                    <span>Keywords Match</span>
+                    <span>24/25</span>
+                </div>
+                <div class="shimmer-progress"><div class="shimmer-progress-fill" style="width: 96%; background: var(--accent-secondary);"></div></div>
             </div>
-            <div class="shimmer-progress"><div class="shimmer-progress-fill" style="width: 96%; background: var(--accent-blue);"></div></div>
-        </div>
-        
-        <div style="margin: 0.8rem 0;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #94A3B8; margin-bottom: 6px; font-weight: 500;">
-                <span>Skill Validation Proof</span>
-                <span>15/15</span>
+            
+            <div style="margin: 1rem 0 0 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">
+                    <span>Skill Validation Proof</span>
+                    <span>15/15</span>
+                </div>
+                <div class="shimmer-progress"><div class="shimmer-progress-fill" style="width: 100%; background: var(--accent-highlight);"></div></div>
             </div>
-            <div class="shimmer-progress"><div class="shimmer-progress-fill" style="width: 100%; background: var(--accent-cyan);"></div></div>
         </div>
+        """)
+
+    # Scroll indicator
+    html_inject("""
+    <div style="text-align: center; margin-top: 4rem; margin-bottom: 3rem; opacity: 0.7;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation: bounce 2s infinite;"><path d="m6 9 6 6 6-6"/></svg>
+        <style>
+            @keyframes bounce {
+                0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+                40% { transform: translateY(-8px); }
+                60% { transform: translateY(-4px); }
+            }
+        </style>
     </div>
-    """, unsafe_allow_html=True)
-    
-    # Section 2: Statistics
-    st.markdown("""
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 5rem;">
-        <div class="glass-card" style="text-align: center;">
+    """)
+
+    # Section 2: Statistics Row
+    html_inject("""
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; margin-bottom: 5rem;">
+        <div class="glass-card" style="text-align: center; padding: 2rem;">
             <div class="counter-number">10,000+</div>
             <div class="counter-label">Resumes Analyzed</div>
         </div>
-        <div class="glass-card" style="text-align: center;">
+        <div class="glass-card" style="text-align: center; padding: 2rem;">
             <div class="counter-number">95%</div>
             <div class="counter-label">User Satisfaction</div>
         </div>
-        <div class="glass-card" style="text-align: center;">
+        <div class="glass-card" style="text-align: center; padding: 2rem;">
             <div class="counter-number">5</div>
             <div class="counter-label">Analysis Dimensions</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
-    
-    # Section 3: Why Choose RESUMATCH?
-    st.markdown("""
+    """)
+
+    # Section 3: Why Choose RESUMATCH? (Features Section)
+    html_inject("""
     <div class="section-title">Why Choose RESUMATCH?</div>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; margin-bottom: 5rem;">
-        <div class="glass-card">
-            <div style="font-size: 2.2rem; margin-bottom: 1.2rem;">📊</div>
-            <h3 style="color: white; font-size: 1.3rem; margin-bottom: 0.6rem; font-weight: 700;">Comprehensive Analysis</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">Get scored across 5 dimensions: formatting, keywords, content, validation, and compatibility.</p>
+        <div class="glass-card" style="padding: 2.2rem;">
+            <div style="margin-bottom: 1.2rem; color: var(--accent-primary);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <h3 style="color: var(--text-primary); font-size: 1.35rem; margin-bottom: 0.8rem; font-weight: 700;">Comprehensive Analysis</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">Get scored across 5 key dimensions: formatting, keywords, content quality, validation, and compatibility.</p>
         </div>
-        <div class="glass-card">
-            <div style="font-size: 2.2rem; margin-bottom: 1.2rem;">🧠</div>
-            <h3 style="color: white; font-size: 1.3rem; margin-bottom: 0.6rem; font-weight: 700;">Smart Skill Validation</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">Verifies your skills through project context and work history matches using semantic checking.</p>
+        <div class="glass-card" style="padding: 2.2rem;">
+            <div style="margin-bottom: 1.2rem; color: var(--accent-primary);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h3 style="color: var(--text-primary); font-size: 1.35rem; margin-bottom: 0.8rem; font-weight: 700;">Smart Skill Validation</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">Verifies your skills through project context and work history matches using semantic semantic checking.</p>
         </div>
-        <div class="glass-card">
-            <div style="font-size: 2.2rem; margin-bottom: 1.2rem;">⚡</div>
-            <h3 style="color: white; font-size: 1.3rem; margin-bottom: 0.6rem; font-weight: 700;">Actionable Insights</h3>
+        <div class="glass-card" style="padding: 2.2rem;">
+            <div style="margin-bottom: 1.2rem; color: var(--accent-primary);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.886H3.82l4.816 3.498L6.724 18.27 12 14.772l5.276 3.498-1.912-5.886 4.816-3.498h-6.268L12 3z"/></svg>
+            </div>
+            <h3 style="color: var(--text-primary); font-size: 1.35rem; margin-bottom: 0.8rem; font-weight: 700;">Actionable Insights</h3>
             <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">Receive specific, prioritized action items to optimize your resume and win more interviews.</p>
         </div>
-        <div class="glass-card">
-            <div style="font-size: 2.2rem; margin-bottom: 1.2rem;">🔒</div>
-            <h3 style="color: white; font-size: 1.3rem; margin-bottom: 0.6rem; font-weight: 700;">Privacy First</h3>
+        <div class="glass-card" style="padding: 2.2rem;">
+            <div style="margin-bottom: 1.2rem; color: var(--accent-primary);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3 style="color: var(--text-primary); font-size: 1.35rem; margin-bottom: 0.8rem; font-weight: 700;">Privacy First</h3>
             <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0;">All evaluations run securely. Your personal details and resume data never leave your control.</p>
         </div>
     </div>
-    """, unsafe_allow_html=True)
-    
-    # Section 4: How RESUMATCH Works
-    st.markdown("""
+    """)
+
+    # Section 4: How RESUMATCH Works (timeline)
+    html_inject("""
     <div class="section-title">How RESUMATCH Works</div>
     <div class="timeline-container">
         <div class="timeline-step">
             <div class="step-num">1</div>
-            <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700;">Upload Resume</h3>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Upload your resume in PDF, DOC, or DOCX formats.</p>
+            <h3 style="color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.6rem; font-weight: 700;">Upload Resume</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.5;">Upload your resume in PDF, DOC, or DOCX formats securely.</p>
         </div>
         <div class="timeline-step">
             <div class="step-num">2</div>
-            <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700;">AI Analysis</h3>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">AI scans and validates your skills, keywords, and action verbs.</p>
+            <h3 style="color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.6rem; font-weight: 700;">AI Scan</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.5;">Our custom scorer scans your projects and validates keywords.</p>
         </div>
         <div class="timeline-step">
             <div class="step-num">3</div>
-            <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 700;">Get ATS Report</h3>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Get detailed reports, formatting reviews, and prioritized fixes.</p>
+            <h3 style="color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.6rem; font-weight: 700;">Optimize & Get Hired</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.5;">Apply structured, prioritized fixes to increase matches.</p>
         </div>
     </div>
-    """, unsafe_allow_html=True)
-    
-    # Testimonials
-    st.markdown("""
+    """)
+
+    # Testimonials Carousel
+    html_inject("""
     <div class="section-title">Trusted by Job Seekers</div>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 5rem;">
-        <div class="glass-card" style="padding: 1.6rem;">
-            <p style="font-style: italic; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.2rem;">
+        <div class="glass-card" style="padding: 1.8rem;">
+            <p style="font-style: italic; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
                 "RESUMATCH helped me increase my ATS score from 62 to 94. Got 3x more interview calls!"
             </p>
             <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 42px; height: 42px; border-radius: 50%; background: #3B82F6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">RS</div>
+                <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--accent-primary); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">RS</div>
                 <div>
-                    <h4 style="margin: 0; color: white; font-size: 0.95rem; font-weight: 600;">Rahul Sharma</h4>
-                    <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Software Engineer</p>
+                    <h4 style="margin: 0; color: var(--text-primary); font-size: 0.95rem; font-weight: 700;">Rahul Sharma <span style="font-size: 0.75rem; color: var(--color-success); margin-left: 4px; font-weight: 800;">✓ Verified</span></h4>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Software Engineer at Hult Prize</p>
                 </div>
             </div>
         </div>
-        <div class="glass-card" style="padding: 1.6rem;">
-            <p style="font-style: italic; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.2rem;">
+        <div class="glass-card" style="padding: 1.8rem;">
+            <p style="font-style: italic; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
                 "The insights are incredibly detailed and actionable. Worth every second!"
             </p>
             <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 42px; height: 42px; border-radius: 50%; background: #8B5CF6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">PS</div>
+                <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--accent-secondary); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">PS</div>
                 <div>
-                    <h4 style="margin: 0; color: white; font-size: 0.95rem; font-weight: 600;">Priya Singh</h4>
+                    <h4 style="margin: 0; color: var(--text-primary); font-size: 0.95rem; font-weight: 700;">Priya Singh <span style="font-size: 0.75rem; color: var(--color-success); margin-left: 4px; font-weight: 800;">✓ Verified</span></h4>
                     <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Product Manager</p>
                 </div>
             </div>
         </div>
-        <div class="glass-card" style="padding: 1.6rem;">
-            <p style="font-style: italic; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.2rem;">
+        <div class="glass-card" style="padding: 1.8rem;">
+            <p style="font-style: italic; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
                 "Best free ATS checker I've used. Highly recommended!"
             </p>
             <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 42px; height: 42px; border-radius: 50%; background: #06B6D4; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">AP</div>
+                <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--accent-highlight); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">AP</div>
                 <div>
-                    <h4 style="margin: 0; color: white; font-size: 0.95rem; font-weight: 600;">Amit Patel</h4>
+                    <h4 style="margin: 0; color: var(--text-primary); font-size: 0.95rem; font-weight: 700;">Amit Patel <span style="font-size: 0.75rem; color: var(--color-success); margin-left: 4px; font-weight: 800;">✓ Verified</span></h4>
                     <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Data Scientist</p>
                 </div>
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
-    
-    # Bottom CTA banner
-    st.markdown("""
-    <div class="glass-card animate-glow" style="text-align: center; padding: 3rem 2rem; border-color: rgba(139, 92, 246, 0.4); margin-bottom: 2rem;">
-        <h2 style="color: white; font-size: 2rem; font-weight: 800; margin-bottom: 0.8rem; letter-spacing: -0.02em;">Ready to Boost Your Resume Score?</h2>
-        <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 500px; margin: 0 auto 2rem auto; line-height: 1.5;">Get started now and increase your chances of getting hired.</p>
+    """)
+
+    # Footer section
+    html_inject("""
+    <div style="margin-top: 5rem; border-top: var(--border-soft); padding-top: 2.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; font-size: 0.85rem; color: var(--text-secondary);">
+        <div>
+            <span style="font-weight: 800; background: var(--grad-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RESUMATCH</span> — © 2026. All rights reserved.
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <a href="https://github.com" target="_blank" style="color: var(--text-secondary); text-decoration: none;">GitHub</a>
+            <a href="https://linkedin.com" target="_blank" style="color: var(--text-secondary); text-decoration: none;">LinkedIn</a>
+            <a href="#" style="color: var(--text-secondary); text-decoration: none;">Privacy Policy</a>
+            <a href="#" style="color: var(--text-secondary); text-decoration: none;">Terms of Service</a>
+        </div>
     </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns([1.5, 2, 1.5])
-    with col2:
-        if st.button("🚀 Optimize Your Resume Now", key="bottom_cta", use_container_width=True, type="primary"):
-            st.session_state.current_view = 'scorer'
-            st.rerun()
+    """)

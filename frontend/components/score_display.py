@@ -1,6 +1,6 @@
 from typing import Any, Dict
-
 import streamlit as st
+from frontend.components._helpers import html_inject
 
 COMPONENTS = [
     ("Formatting",        "formatting",        20, "📝"),
@@ -33,29 +33,26 @@ def display_overall_score(analysis: Dict[str, Any]) -> None:
     st.markdown("## 📊 Analysis Results")
     _, mid, _ = st.columns([1, 2, 1])
     with mid:
-        st.markdown(
-            f"""
-            <div class="glass-card animate-glow" style="text-align: center; padding: 2.5rem; margin-top: 1rem;">
-                <div class="score-circle-container" style="--dashoffset: {dashoffset}px;">
-                    <svg class="score-svg" viewBox="0 0 200 200">
-                        <defs>
-                            <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#8B5CF6" />
-                                <stop offset="100%" stop-color="#3B82F6" />
-                            </linearGradient>
-                        </defs>
-                        <circle class="score-bg-circle" cx="100" cy="100" r="90" />
-                        <circle class="score-fill-circle" cx="100" cy="100" r="90" />
-                    </svg>
-                    <div class="score-value-text">{score:.0f}</div>
-                    <div class="score-label-text" style="color: {status_color};">{status_label}</div>
-                </div>
-                <h3 style="color: white; margin-top: 1.5rem; font-size: 1.5rem; font-weight: 700;">Overall ATS Score</h3>
-                <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1rem;">{interpretation}</p>
+        html_inject(f"""
+        <div class="glass-card animate-glow" style="text-align: center; padding: 2.5rem; margin-top: 1rem;">
+            <div class="score-circle-container" style="--dashoffset: {dashoffset}px;">
+                <svg class="score-svg" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#7C5CFF" />
+                            <stop offset="100%" stop-color="#3BA8FF" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="score-bg-circle" cx="100" cy="100" r="90" />
+                    <circle class="score-fill-circle" cx="100" cy="100" r="90" />
+                </svg>
+                <div class="score-value-text">{score:.0f}</div>
+                <div class="score-label-text" style="color: {status_color};">{status_label}</div>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            <h3 style="color: var(--text-primary); margin-top: 1.5rem; font-size: 1.5rem; font-weight: 700;">Overall ATS Score</h3>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1rem;">{interpretation}</p>
+        </div>
+        """)
 
 
 def display_score_breakdown(analysis: Dict[str, Any]) -> None:
@@ -70,24 +67,21 @@ def display_score_breakdown(analysis: Dict[str, Any]) -> None:
         
         # Color coding
         if percentage >= 80:
-            bar_color = "var(--accent-green)"
+            bar_color = "var(--color-success)"
         elif percentage >= 60:
-            bar_color = "var(--accent-yellow)"
+            bar_color = "var(--color-warning)"
         else:
-            bar_color = "var(--accent-red)"
+            bar_color = "var(--color-danger)"
 
         with left if i % 2 == 0 else right:
-            st.markdown(
-                f"""
-                <div class="glass-card" style="padding: 1.2rem; margin-bottom: 1rem; border-color: rgba(255,255,255,0.03);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-weight: 600; color: white; font-size: 0.95rem;">{icon} {label}</span>
-                        <span style="font-weight: 700; color: white; font-size: 0.95rem;">{value:.1f} / {max_score}</span>
-                    </div>
-                    <div class="shimmer-progress" style="height: 10px;">
-                        <div class="shimmer-progress-fill" style="width: {percentage}%; background: {bar_color};"></div>
-                    </div>
+            html_inject(f"""
+            <div class="glass-card" style="padding: 1.2rem; margin-bottom: 1rem; border-color: rgba(255,255,255,0.03);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem;">{icon} {label}</span>
+                    <span style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">{value:.1f} / {max_score}</span>
                 </div>
-                """,
-                unsafe_allow_html=True,
-            )
+                <div class="shimmer-progress" style="height: 10px;">
+                    <div class="shimmer-progress-fill" style="width: {percentage}%; background: {bar_color};"></div>
+                </div>
+            </div>
+            """)

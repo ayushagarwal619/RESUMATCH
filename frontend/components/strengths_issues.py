@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 import streamlit as st
+from frontend.components._helpers import html_inject
 
 
 def display_strengths(strengths: List[str]) -> None:
@@ -8,9 +9,7 @@ def display_strengths(strengths: List[str]) -> None:
         st.info("Keep improving your resume to unlock strengths!")
         return
 
-    st.markdown("""
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; margin-top: 1rem;">
-    """, unsafe_allow_html=True)
+    st.markdown('<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; margin-top: 1rem;">', unsafe_allow_html=True)
     
     for item in strengths:
         item_lower = item.lower()
@@ -31,21 +30,18 @@ def display_strengths(strengths: List[str]) -> None:
         else:
             icon, title = "🌟", "Resume Strength"
 
-        st.markdown(
-            f"""
-            <div class="glass-card" style="padding: 1.2rem; border-left: 4px solid var(--accent-green); border-color: var(--accent-green); margin-bottom: 0.8rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.4rem;">{icon}</span>
-                        <h4 style="margin: 0; color: white; font-size: 1rem; font-weight: 700;">{title}</h4>
-                    </div>
-                    <span style="font-size: 0.75rem; font-weight: bold; background: rgba(16, 185, 129, 0.15); color: #10B981; padding: 2px 8px; border-radius: var(--radius-full);">High Confidence</span>
+        html_inject(f"""
+        <div class="glass-card" style="padding: 1.2rem; border-left: 4px solid var(--color-success); border-color: var(--color-success); margin-bottom: 0.8rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.4rem;">{icon}</span>
+                    <h4 style="margin: 0; color: var(--text-primary); font-size: 1rem; font-weight: 700;">{title}</h4>
                 </div>
-                <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin: 0;">{item}</p>
+                <span style="font-size: 0.75rem; font-weight: bold; background: rgba(34, 197, 94, 0.15); color: #22C55E; padding: 2px 8px; border-radius: var(--radius-full);">High Confidence</span>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin: 0;">{item}</p>
+        </div>
+        """)
         
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -58,37 +54,32 @@ def display_critical_issues(analysis: Dict[str, Any]) -> None:
     summary = [s for s in summary if s != "ATS Score Breakdown & Explanation"]
 
     if not critical and not summary:
-        st.markdown("""
-        <div class="glass-card" style="border-left: 4px solid var(--accent-green); border-color: var(--accent-green); padding: 1.5rem; text-align: center; margin-top: 1rem;">
+        html_inject("""
+        <div class="glass-card" style="border-left: 4px solid var(--color-success); border-color: var(--color-success); padding: 1.5rem; text-align: center; margin-top: 1rem;">
             <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">✅</div>
-            <h3 style="color: white; margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1.25rem;">No Critical Issues Found!</h3>
+            <h3 style="color: var(--text-primary); margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1.25rem;">No Critical Issues Found!</h3>
             <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0;">Your resume doesn't have any urgent structural issues. Excellent formatting.</p>
         </div>
-        """, unsafe_allow_html=True)
+        """)
         return
 
     st.markdown("### 🚨 Critical Issues")
     
-    st.markdown("""
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; margin-top: 1rem; margin-bottom: 1rem;">
-    """, unsafe_allow_html=True)
+    st.markdown('<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; margin-top: 1rem; margin-bottom: 1rem;">', unsafe_allow_html=True)
 
     for item in critical:
-        st.markdown(
-            f"""
-            <div class="glass-card" style="padding: 1.2rem; border-left: 4px solid var(--accent-red); border-color: var(--accent-red);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.4rem;">🚨</span>
-                        <h4 style="margin: 0; color: white; font-size: 1.05rem; font-weight: 700;">{item}</h4>
-                    </div>
-                    <span style="font-size: 0.75rem; font-weight: bold; background: rgba(239, 68, 68, 0.15); color: #EF4444; padding: 2px 8px; border-radius: var(--radius-full);">High Priority</span>
+        html_inject(f"""
+        <div class="glass-card" style="padding: 1.2rem; border-left: 4px solid var(--color-danger); border-color: var(--color-danger);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.4rem;">🚨</span>
+                    <h4 style="margin: 0; color: var(--text-primary); font-size: 1.05rem; font-weight: 700;">{item}</h4>
                 </div>
-                <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin: 0;">This issue should be addressed first for better recruiter validation.</p>
+                <span style="font-size: 0.75rem; font-weight: bold; background: rgba(239, 68, 68, 0.15); color: #EF4444; padding: 2px 8px; border-radius: var(--radius-full);">High Priority</span>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin: 0;">This issue should be addressed first for better recruiter validation.</p>
+        </div>
+        """)
 
     st.markdown("</div>", unsafe_allow_html=True)
 

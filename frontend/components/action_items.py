@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Tuple
 import streamlit as st
+from frontend.components._helpers import html_inject
 
 SEVERITY_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 
@@ -54,20 +55,17 @@ def display_action_items(analysis: Dict[str, Any]) -> None:
             impact_text = "Low Impact (+1-3 pts)"
             border_color = "#10B981"
 
-        st.markdown(
-            f"""
-            <div class="glass-card" style="padding: 1.2rem; border-left: 4px solid {border_color}; border-color: {border_color}; display: flex; align-items: flex-start; gap: 12px; margin-bottom: 0.5rem;">
-                <div style="font-size: 1.3rem; margin-top: 2px;">☑️</div>
-                <div style="flex: 1;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
-                        <span style="font-weight: 700; color: white; font-size: 0.9rem;">{source}</span>
-                        <span style="font-size: 0.75rem; font-weight: bold; background: {badge_bg}; color: {badge_color}; padding: 2px 8px; border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.03);">{impact_text}</span>
-                    </div>
-                    <p style="color: var(--text-primary); font-size: 0.9rem; line-height: 1.5; margin: 0;">{action}</p>
+        html_inject(f"""
+        <div class="glass-card" style="padding: 1.2rem; border-left: 4px solid {border_color}; border-color: {border_color}; display: flex; align-items: flex-start; gap: 12px; margin-bottom: 0.5rem;">
+            <div style="font-size: 1.3rem; margin-top: 2px;">☑️</div>
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                    <span style="font-weight: 700; color: var(--text-primary); font-size: 0.9rem;">{source}</span>
+                    <span style="font-size: 0.75rem; font-weight: bold; background: {badge_bg}; color: {badge_color}; padding: 2px 8px; border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.03);">{impact_text}</span>
                 </div>
+                <p style="color: var(--text-primary); font-size: 0.9rem; line-height: 1.5; margin: 0;">{action}</p>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        </div>
+        """)
 
     st.markdown('</div>', unsafe_allow_html=True)
