@@ -60,38 +60,38 @@ def render():
         """)
 
     with right_col:
-        # Right-column: Simulated ATS Dashboard Visual illustration
+        # Right-column: Simulated ATS Dashboard Visual illustration (Strictly style-free HTML tags to prevent escaping)
         html_inject("""
-        <div class="glass-card floating-graphics animate-glow" style="width: 100%; max-width: 420px; margin-top: 1rem; text-align: left; padding: 2.2rem;">
+        <div class="glass-card floating-graphics animate-glow hero-dashboard-card">
             <div class="card-badge">PRO</div>
-            <h4 style="margin: 0; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800;">ATS METRIC REPORT</h4>
-            <div style="display: flex; align-items: baseline; gap: 10px; margin: 0.8rem 0;">
-                <span style="font-size: 4.2rem; font-weight: 800; color: var(--text-primary); line-height: 1; letter-spacing: -0.04em;">95</span>
-                <span style="font-size: 1.3rem; font-weight: 700; color: var(--color-success);">Excellent</span>
+            <h4 class="report-header">ATS METRIC REPORT</h4>
+            <div class="hero-dashboard-score-row">
+                <span class="hero-dashboard-score-num">95</span>
+                <span class="hero-dashboard-score-label">Excellent</span>
             </div>
             
-            <div style="margin: 2rem 0 1rem 0;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">
+            <div class="hero-dashboard-metric-item" style="margin-top: 2rem;">
+                <div class="hero-dashboard-metric-header">
                     <span>Formatting Quality</span>
                     <span>19/20</span>
                 </div>
-                <div class="shimmer-progress"><div class="shimmer-progress-fill" style="width: 95%;"></div></div>
+                <div class="shimmer-progress"><div class="shimmer-progress-fill w-95"></div></div>
             </div>
             
-            <div style="margin: 1rem 0;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">
+            <div class="hero-dashboard-metric-item">
+                <div class="hero-dashboard-metric-header">
                     <span>Keywords Match</span>
                     <span>24/25</span>
                 </div>
-                <div class="shimmer-progress"><div class="shimmer-progress-fill" style="width: 96%; background: var(--accent-secondary);"></div></div>
+                <div class="shimmer-progress"><div class="shimmer-progress-fill w-96 bg-blue"></div></div>
             </div>
             
-            <div style="margin: 1rem 0 0 0;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">
+            <div class="hero-dashboard-metric-item">
+                <div class="hero-dashboard-metric-header">
                     <span>Skill Validation Proof</span>
                     <span>15/15</span>
                 </div>
-                <div class="shimmer-progress"><div class="shimmer-progress-fill" style="width: 100%; background: var(--accent-highlight);"></div></div>
+                <div class="shimmer-progress"><div class="shimmer-progress-fill w-100 bg-cyan"></div></div>
             </div>
         </div>
         """)

@@ -59,24 +59,29 @@ def load_css():
         if theme == 'light':
             variables = """
             :root {
-                --bg-main: #F7F9FC;
-                --bg-secondary: #EDF2F7;
+                --bg-main: #F8FAFC;
+                --bg-secondary: #F1F5F9;
                 --bg-card: #FFFFFF;
-                --accent-primary: #5B5BF7;
-                --accent-secondary: #3A86FF;
-                --accent-highlight: #00A6FF;
-                --color-success: #22C55E;
+                --bg-sidebar: #FFFFFF;
+                --accent-primary: #4F46E5;
+                --accent-secondary: #2563EB;
+                --accent-highlight: #06B6D4;
+                --color-success: #10B981;
                 --color-warning: #F59E0B;
                 --color-danger: #EF4444;
                 --text-primary: #111827;
-                --text-secondary: #4B5563;
-                --text-muted: #9CA3AF;
-                --border-soft: 1px solid #E5E7EB;
-                --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.04);
-                --grad-primary: linear-gradient(135deg, #5B5BF7 0%, #3A86FF 100%);
-                --bg-sidebar: #FFFFFF;
-                --glow-color: rgba(91, 91, 247, 0.08);
-                --border-glow: 1px solid #E5E7EB;
+                --text-secondary: #374151;
+                --text-muted: #6B7280;
+                --border-soft: 1px solid #D1D5DB;
+                --shadow-premium: 0 4px 20px rgba(0, 0, 0, 0.05);
+                --grad-primary: linear-gradient(135deg, #4F46E5 0%, #2563EB 100%);
+                --glow-color: rgba(79, 70, 229, 0.05);
+                --border-glow: 1px solid #D1D5DB;
+            }
+            """
+            theme_slider = """
+            div[data-element-id="theme_toggle_btn"] button::after {
+                left: 3px !important;
             }
             """
         else:
@@ -84,25 +89,30 @@ def load_css():
             :root {
                 --bg-main: #070B18;
                 --bg-secondary: #0E1324;
-                --bg-card: #131B30;
+                --bg-card: #111827;
+                --bg-sidebar: #0B1220;
                 --accent-primary: #7C5CFF;
                 --accent-secondary: #3BA8FF;
                 --accent-highlight: #00E5FF;
-                --color-success: #22C55E;
+                --color-success: #10B981;
                 --color-warning: #F59E0B;
                 --color-danger: #EF4444;
                 --text-primary: #FFFFFF;
                 --text-secondary: #A8B3CF;
-                --text-muted: #6B7280;
-                --border-soft: 1px solid rgba(255, 255, 255, 0.08);
+                --text-muted: #9CA3AF;
+                --border-soft: 1px solid rgba(255,255,255,0.12);
                 --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.5);
                 --grad-primary: linear-gradient(135deg, #7C5CFF 0%, #3BA8FF 100%);
-                --bg-sidebar: #0E1324;
-                --glow-color: rgba(124, 92, 255, 0.25);
-                --border-glow: 1px solid rgba(124, 92, 255, 0.3);
+                --glow-color: rgba(124, 92, 255, 0.2);
+                --border-glow: 1px solid rgba(255, 255, 255, 0.12);
             }
             """
-        return f'<style>{variables}\n{css_content}</style>'
+            theme_slider = """
+            div[data-element-id="theme_toggle_btn"] button::after {
+                left: calc(50% + 3px) !important;
+            }
+            """
+        return f'<style>{variables}\n{theme_slider}\n{css_content}</style>'
     except FileNotFoundError:
         return ''
 
@@ -150,7 +160,7 @@ with st.sidebar:
     
     # Theme pill switch logic
     current_theme = st.session_state.get("theme", "dark")
-    toggle_text = "☀ Switch to Light" if current_theme == "dark" else "🌙 Switch to Dark"
+    toggle_text = "☀️ Light   🌙 Dark"
     if st.button(toggle_text, key="theme_toggle_btn", use_container_width=True):
         st.session_state.theme = "light" if current_theme == "dark" else "dark"
         st.rerun()
@@ -229,8 +239,7 @@ with st.sidebar:
                     st.session_state.user_email    = result["email"]
                 st.rerun()
 
-        st.markdown("<div style='text-align:center; margin: 8px 0; color:#94a3b8;'>or</div>",
-                    unsafe_allow_html=True)
+        html_inject("<div class='auth-divider'><span>or</span></div>")
 
         oauth = supabase_client.google_oauth_url()
         if "error" in oauth:
