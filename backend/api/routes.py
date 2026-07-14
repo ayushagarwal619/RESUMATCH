@@ -166,16 +166,28 @@ async def delete_history_entry(
 
 @router.post('/generate-pdf')
 async def generate_pdf(
+    request: Request,
     data: AnalysisResponse,
     user_id: str = Depends(get_current_user),
 ):
-    from backend.services.report_generator import generate_html_reports
-    from backend.services.pdf_export import generate_combined_pdf
+    from backend.services.pdf_export import generate_pdf_report
     from fastapi.responses import Response
 
+    candidate_name = "Candidate"
     try:
-        html_docs = generate_html_reports(data.model_dump())
-        pdf_bytes = generate_combined_pdf(html_docs)
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            from backend.api.auth import _verify_token
+            payload = _verify_token(token)
+            email = payload.get("email")
+            if email:
+                candidate_name = email.split("@")[0].title()
+    except Exception:
+        pass
+
+    try:
+        pdf_bytes = generate_pdf_report(data.model_dump(), candidate_name)
 
         return Response(
             content=pdf_bytes,
@@ -191,12 +203,12 @@ async def generate_pdf(
 
 @router.get('/history/{analysis_id}/pdf')
 async def generate_history_pdf(
+    request: Request,
     analysis_id: str,
     user_id: str = Depends(get_current_user),
 ):
     from backend.database.supabase_db import get_user_history
-    from backend.services.report_generator import generate_html_reports
-    from backend.services.pdf_export import generate_combined_pdf
+    from backend.services.pdf_export import generate_pdf_report
     from fastapi.responses import Response
 
     history = await get_user_history(user_id)
@@ -205,9 +217,21 @@ async def generate_history_pdf(
     if not analysis_data:
         raise HTTPException(status_code=404, detail="Analysis not found")
 
+    candidate_name = "Candidate"
     try:
-        html_docs = generate_html_reports(analysis_data)
-        pdf_bytes = generate_combined_pdf(html_docs)
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            from backend.api.auth import _verify_token
+            payload = _verify_token(token)
+            email = payload.get("email")
+            if email:
+                candidate_name = email.split("@")[0].title()
+    except Exception:
+        pass
+
+    try:
+        pdf_bytes = generate_pdf_report(analysis_data, candidate_name)
 
         return Response(
             content=pdf_bytes,
