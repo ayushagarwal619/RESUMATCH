@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # Auth state. Populated by Supabase sign-in / sign-up / OAuth.
-# All four are None when signed out, all four are set when signed in.
+# All are None when signed out, set when signed in.
 for key, default in [
     ("access_token", None),
     ("refresh_token", None),
@@ -24,9 +24,27 @@ for key, default in [
     ("user_email", None),
     ("auth_error", None),
     ("auth_info", None),
+    ("authenticated", False),
+    ("email", None),
+    ("full_name", None),
+    ("session", None),
 ]:
     if key not in st.session_state:
         st.session_state[key] = default
+
+# Restore persistent session on startup if not already loaded in session_state
+if not st.session_state.access_token:
+    from frontend.services import supabase_client
+    restored = supabase_client.restore_session()
+    if restored:
+        st.session_state.access_token  = restored["access_token"]
+        st.session_state.refresh_token = restored["refresh_token"]
+        st.session_state.user_id       = restored["user_id"]
+        st.session_state.user_email    = restored["email"]
+        st.session_state.authenticated = restored["authenticated"]
+        st.session_state.email         = restored["email"]
+        st.session_state.full_name     = restored["full_name"]
+        st.session_state.session       = restored["session"]
 
 # If we just came back from Google OAuth, Supabase appends `?code=<authcode>`
 # to the redirect URL. Exchange it for a session before rendering anything.
@@ -46,6 +64,10 @@ if (
         st.session_state.refresh_token = result["refresh_token"]
         st.session_state.user_id       = result["user_id"]
         st.session_state.user_email    = result["email"]
+        st.session_state.authenticated = result["authenticated"]
+        st.session_state.email         = result["email"]
+        st.session_state.full_name     = result["full_name"]
+        st.session_state.session       = result["session"]
         st.rerun()
 
 #Load custom CSS
@@ -199,8 +221,17 @@ with st.sidebar:
         """)
         if st.button("Sign out", key="btn_signout", use_container_width=True):
             supabase_client.sign_out()
-            for k in ("access_token", "refresh_token", "user_id", "user_email"):
-                st.session_state[k] = None
+            for k, default in [
+                ("access_token", None),
+                ("refresh_token", None),
+                ("user_id", None),
+                ("user_email", None),
+                ("authenticated", False),
+                ("email", None),
+                ("full_name", None),
+                ("session", None)
+            ]:
+                st.session_state[k] = default
             st.rerun()
     else:
         # Signed-out state: tabs for sign-in vs sign-up + Google OAuth button.
@@ -227,6 +258,10 @@ with st.sidebar:
                     st.session_state.refresh_token = result["refresh_token"]
                     st.session_state.user_id       = result["user_id"]
                     st.session_state.user_email    = result["email"]
+                    st.session_state.authenticated = result["authenticated"]
+                    st.session_state.email         = result["email"]
+                    st.session_state.full_name     = result["full_name"]
+                    st.session_state.session       = result["session"]
                 st.rerun()
 
         with tab_up:
@@ -247,6 +282,10 @@ with st.sidebar:
                     st.session_state.refresh_token = result["refresh_token"]
                     st.session_state.user_id       = result["user_id"]
                     st.session_state.user_email    = result["email"]
+                    st.session_state.authenticated = result["authenticated"]
+                    st.session_state.email         = result["email"]
+                    st.session_state.full_name     = result["full_name"]
+                    st.session_state.session       = result["session"]
                 st.rerun()
 
         html_inject("<div class='auth-divider'><span>or</span></div>")
