@@ -113,7 +113,21 @@ async def analyze_resume(
         matched_keywords=result.get('matched_keywords', []),
         skills=list(result.get('skills', [])[:20]),
         jd_comparison=jd_comparison_result,
-        interpretation=result.get('interpretation', '')
+        interpretation=result.get('interpretation', ''),
+
+        # Recruiter Overhaul properties
+        strengths=result.get('strengths', []),
+        critical_issues=result.get('critical_issues', []),
+        suggestions=result.get('suggestions', []),
+        resume_quality_score=result.get('resume_quality_score'),
+        ats_compatibility_score=result.get('ats_compatibility_score'),
+        job_match_score=result.get('job_match_score'),
+        recruiter_insights=result.get('recruiter_insights'),
+        red_flags=result.get('red_flags', []),
+        resume_completeness_pct=result.get('resume_completeness_pct'),
+        completeness_percentage=result.get('completeness_percentage'),
+        explainable_cards=result.get('explainable_cards'),
+        confidence_scores=result.get('confidence_scores')
     )
 
 
@@ -123,6 +137,10 @@ async def analyze_resume(
     except Exception as exc:
         logger.warning(f'History save failed (non-blocking): {exc}')
 
+    logger.info("==========================================")
+    logger.info("SERIALIZED RESPONSE JSON:")
+    logger.info(response.model_dump_json())
+    logger.info("==========================================")
     return response
 
 @router.get('/health')

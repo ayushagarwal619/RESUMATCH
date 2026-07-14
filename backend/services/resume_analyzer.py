@@ -218,6 +218,8 @@ def analyze_full_resume(
         # New Recruiter Insights properties
         "recruiter_insights": scores.get('recruiter_insights', {}),
         "red_flags": scores.get('red_flags', []),
+        "critical_issues": scores.get('red_flags', []),
+        "confidence_scores": parsed_resume.get('confidence_scores', {}),
         "resume_completeness_pct": float(scores.get('resume_completeness_pct') or 100.0) if scores.get('resume_completeness_pct') is not None else 100.0,
         "completeness_percentage": float(scores.get('completeness_percentage') or 100.0) if scores.get('completeness_percentage') is not None else 100.0,
         "explainable_cards": scores.get('explainable_cards', {})

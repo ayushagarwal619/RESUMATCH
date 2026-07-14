@@ -296,6 +296,11 @@ def render() -> None:
         return
 
     st.session_state["scorer_analysis"] = analysis
+    import json
+    print("==========================================")
+    print("STREAMLIT RECEIVED ANALYSIS JSON:")
+    print(json.dumps(analysis, indent=2))
+    print("==========================================")
     st.success("✅ Analysis complete!")
     display_results_dashboard(analysis)
     _render_export_buttons(analysis)

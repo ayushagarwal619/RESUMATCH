@@ -60,3 +60,4 @@ class AnalysisResponse(BaseModel):
     resume_completeness_pct: Optional[float] = None
     completeness_percentage: Optional[float] = None
     explainable_cards: Optional[Dict[str, Any]] = None
+    confidence_scores: Optional[Dict[str, float]] = None
