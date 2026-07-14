@@ -51,3 +51,12 @@ class AnalysisResponse(BaseModel):
     jd_comparison: Optional[JDComparison] = None
     warnings: List[str] = []
     interpretation: str = ""
+    
+    resume_quality_score: Optional[float] = None
+    ats_compatibility_score: Optional[float] = None
+    job_match_score: Optional[float] = None
+    recruiter_insights: Optional[Dict[str, Any]] = None
+    red_flags: Optional[List[str]] = []
+    resume_completeness_pct: Optional[float] = None
+    completeness_percentage: Optional[float] = None
+    explainable_cards: Optional[Dict[str, Any]] = None
