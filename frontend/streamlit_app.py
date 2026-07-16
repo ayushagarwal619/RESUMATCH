@@ -191,31 +191,29 @@ with st.sidebar:
     # Premium branding header using official logo icon
     logo_base64 = get_image_base64("frontend/assets/logo_icon.jpg")
     html_inject(f"""
-    <div style="display: flex; align-items: center; gap: 14px; padding: 1rem 0; border-bottom: var(--border-soft); margin-bottom: 1.5rem;">
+    <div style="display: flex; align-items: center; gap: 14px; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 1.5rem;">
         <img src="data:image/jpeg;base64,{logo_base64}" style="width: 38px; height: 38px; border-radius: 8px; transition: transform 0.2s;" class="logo-img" />
         <span style="font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em; background: linear-gradient(135deg, #C084FC 0%, #6366F1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif;">RESUMATCH</span>
     </div>
     """)
     
-    current_view = st.session_state.current_view
-    
-    if st.button("Home", key="nav_home", use_container_width=True, type="primary" if current_view == 'landing' else "secondary"):
+    if st.button("Home", key="nav_home", use_container_width=True):
         st.session_state.current_view = 'landing'
         st.rerun()
     
-    if st.button("Analyze Resume", key="nav_scorer", use_container_width=True, type="primary" if current_view == 'scorer' else "secondary"):
+    if st.button("Analyze Resume", key="nav_scorer", use_container_width=True):
         st.session_state.current_view = 'scorer'
         st.rerun()
     
-    if st.button("History", key="nav_history", use_container_width=True, type="primary" if current_view == 'history' else "secondary"):
+    if st.button("History", key="nav_history", use_container_width=True):
         st.session_state.current_view = 'history'
         st.rerun()
     
-    if st.button("Resources", key="nav_resources", use_container_width=True, type="primary" if current_view == 'resources' else "secondary"):
+    if st.button("Resources", key="nav_resources", use_container_width=True):
         st.session_state.current_view = 'resources'
         st.rerun()
     
-    st.markdown("<div style='margin: 1.5rem 0 1rem 0; border-top: var(--border-soft);'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin: 1.5rem 0 1rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
     st.markdown("### 🌓 Appearance")
     
     # Theme pill switch logic
