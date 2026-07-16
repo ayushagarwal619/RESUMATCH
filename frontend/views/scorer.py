@@ -89,21 +89,24 @@ def _summary_text(analysis: dict) -> str:
 
 
 def _render_upload_area(analysis_mode: str):
-    """Two-column upload widgets. Returns (resume_file, jd_file, jd_text)."""
+    """Two-column custom premium upload widgets. Returns (resume_file, jd_file, jd_text)."""
     left, right = st.columns(2)
 
     with left:
         st.markdown(
             textwrap.dedent("""
-            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
-                <h3 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    Upload Resume
-                </h3>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                    Supported: <strong>Text-based PDF, DOC, DOCX</strong>.<br>
-                    Scanned PDFs are currently unsupported.
-                </p>
+            <div class="custom-upload-container">
+                <div class="upload-illustration">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="floating-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <h4>Upload your Resume</h4>
+                <p class="upload-sub">Drag & drop or browse your local files</p>
+                <div class="format-chips">
+                    <span>PDF</span>
+                    <span>DOC</span>
+                    <span>DOCX</span>
+                </div>
+                <div class="max-size-label">MAX FILE SIZE: 5MB</div>
             </div>
             """),
             unsafe_allow_html=True
@@ -116,7 +119,16 @@ def _render_upload_area(analysis_mode: str):
             key="resume_upload",
         )
         if resume_file:
-            st.success(f"✅ {resume_file.name} ({resume_file.size / 1024:.1f} KB)")
+            html_inject(f"""
+            <div class="file-preview-card glass-card">
+                <div class="file-icon">📄</div>
+                <div class="file-info">
+                    <div class="file-name">{resume_file.name}</div>
+                    <div class="file-size">{resume_file.size / 1024:.1f} KB</div>
+                </div>
+                <div class="file-status-badge">READY</div>
+            </div>
+            """)
 
     jd_file: Optional[object] = None
     jd_text = ""
@@ -125,14 +137,12 @@ def _render_upload_area(analysis_mode: str):
         if analysis_mode == "Job Description Comparison":
             st.markdown(
                 textwrap.dedent("""
-                <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
-                    <h3 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                        Job Description
-                    </h3>
-                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                        Compare your resume against a specific role to calculate keywords and skills gap analysis.
-                    </p>
+                <div class="custom-upload-container">
+                    <div class="upload-illustration">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="floating-icon" style="animation-delay: 1.5s;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </div>
+                    <h4>Target Job Description</h4>
+                    <p class="upload-sub">Provide the job listing text or upload requirements</p>
                 </div>
                 """),
                 unsafe_allow_html=True
@@ -145,6 +155,9 @@ def _render_upload_area(analysis_mode: str):
                 label_visibility="collapsed",
                 key="jd_input_method",
             )
+            
+            st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
+            
             if jd_method == "Upload .txt File":
                 jd_file = st.file_uploader(
                     "Choose JD file (.txt only)",
@@ -152,7 +165,16 @@ def _render_upload_area(analysis_mode: str):
                     key="jd_upload",
                 )
                 if jd_file:
-                    st.success(f"✅ {jd_file.name}")
+                    html_inject(f"""
+                    <div class="file-preview-card glass-card">
+                        <div class="file-icon">📄</div>
+                        <div class="file-info">
+                            <div class="file-name">{jd_file.name}</div>
+                            <div class="file-size">{jd_file.size / 1024:.1f} KB</div>
+                        </div>
+                        <div class="file-status-badge">READY</div>
+                    </div>
+                    """)
             else:
                 jd_text = st.text_area(
                     "Paste job description text:",
@@ -162,18 +184,25 @@ def _render_upload_area(analysis_mode: str):
                     key="jd_text",
                 )
                 if jd_text:
-                    st.success(f"✅ {len(jd_text)} characters")
+                    html_inject(f"""
+                    <div class="file-preview-card glass-card">
+                        <div class="file-icon">📝</div>
+                        <div class="file-info">
+                            <div class="file-name">Job Description Text</div>
+                            <div class="file-size">{len(jd_text)} characters</div>
+                        </div>
+                        <div class="file-status-badge">READY</div>
+                    </div>
+                    """)
         else:
             st.markdown(
                 textwrap.dedent("""
-                <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem; min-height: 140px;">
-                    <h3 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                        Job Description
-                    </h3>
-                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                        JD Comparison is disabled. Switch to <strong>Job Description Comparison</strong> mode to paste or upload requirements.
-                    </p>
+                <div class="custom-upload-container" style="opacity: 0.5; cursor: not-allowed; border-style: solid; border-color: var(--border-soft);">
+                    <div class="upload-illustration">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <h4 style="color: var(--text-muted);">JD Match Disabled</h4>
+                    <p class="upload-sub" style="color: var(--text-muted); margin-bottom: 0;">Switch to Job Description Comparison mode in options to paste requirements.</p>
                 </div>
                 """),
                 unsafe_allow_html=True
@@ -229,16 +258,22 @@ def _render_export_buttons(analysis: dict) -> None:
 def render() -> None:
     st.markdown(
         textwrap.dedent("""
-        <div style="margin-bottom: 2rem;">
-            <h1 style="margin: 0; background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 2.5rem; letter-spacing: -0.02em;">Analyze Resume</h1>
-            <p style="margin: 6px 0 0 0; font-size: 1.05rem; color: var(--text-secondary); font-weight: 600;">Match. Optimize. Get Hired.</p>
+        <div class="premium-hero">
+            <div class="hero-glow-blob"></div>
+            <h1 class="hero-title">Optimize Your Resume. Win Interviews.</h1>
+            <p class="hero-subtitle">Upload your resume to receive instantaneous, recruiter-grade ATS scoring, structural audit, and keywords compatibility match.</p>
+            <div class="trust-badges">
+                <span class="trust-badge"><span class="badge-dot dot-purple"></span> ATS Optimized</span>
+                <span class="trust-badge"><span class="badge-dot dot-blue"></span> Recruiter Grade</span>
+                <span class="trust-badge"><span class="badge-dot dot-green"></span> AI Powered</span>
+            </div>
         </div>
         """),
         unsafe_allow_html=True
     )
 
     with st.sidebar:
-        st.markdown("<div style='margin: 1.5rem 0 1rem 0; border-top: 1px solid rgba(255,255,255,0.05);'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin: 1.5rem 0 1rem 0; border-top: var(--border-soft);'></div>", unsafe_allow_html=True)
         st.markdown("## 📊 Analysis Options")
         st.info(
             "**General ATS Score**: resume only — overall compatibility.\n\n"
