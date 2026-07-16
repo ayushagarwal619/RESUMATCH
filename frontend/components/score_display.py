@@ -65,7 +65,7 @@ def display_overall_score(analysis: Dict[str, Any]) -> None:
     for col, title, val, offset, color, label, desc in cols:
         with col:
             html_inject(f"""
-            <div class="glass-card animate-glow" style="text-align: center; padding: 2rem; margin-top: 1rem; height: 390px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px;">
+            <div class="glass-card animate-glow" style="text-align: center; padding: 2rem; margin-top: 1rem; height: 390px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: var(--border-soft); border-radius: 16px;">
                 <h3 style="color: var(--text-primary); font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; height: 40px; display: flex; align-items: center; justify-content: center;">{title}</h3>
                 <div class="score-circle-container" style="--dashoffset: {offset}px; width: 140px; height: 140px; position: relative; display: flex; align-items: center; justify-content: center;">
                     <svg class="score-svg" viewBox="0 0 200 200" style="width: 140px; height: 140px; transform: rotate(-90deg);">
@@ -75,7 +75,7 @@ def display_overall_score(analysis: Dict[str, Any]) -> None:
                                 <stop offset="100%" stop-color="#3B82F6" />
                             </linearGradient>
                         </defs>
-                        <circle cx="100" cy="100" r="90" style="fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 12px;" />
+                        <circle cx="100" cy="100" r="90" style="fill: none; stroke: var(--circle-stroke-empty); stroke-width: 12px;" />
                         <circle cx="100" cy="100" r="90" style="fill: none; stroke: url(#grad_{title.replace(' ', '')}); stroke-width: 12px; stroke-dasharray: 565.48; stroke-dashoffset: {offset}; stroke-linecap: round; transition: stroke-dashoffset 1s ease-out;" />
                     </svg>
                     <div class="score-value" style="position: absolute; color: var(--text-primary); font-size: 2.2rem; font-weight: 800; text-align: center;">{val:.0f}</div>
@@ -109,7 +109,7 @@ def display_score_breakdown(analysis: Dict[str, Any]) -> None:
 
         with left if i % 2 == 0 else right:
             html_inject(f"""
-            <div class="glass-card" style="padding: 1.2rem; margin-bottom: 1rem; border-color: rgba(255,255,255,0.03);">
+            <div class="glass-card" style="padding: 1.2rem; margin-bottom: 1rem; border: var(--border-soft);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem;">{icon} {label}</span>
                     <span style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">{value:.1f} / {max_score}</span>

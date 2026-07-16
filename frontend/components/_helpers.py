@@ -2,12 +2,12 @@ from typing import Tuple
 
 
 def get_score_color(score: float) -> Tuple[str, str]:
-    """Return (text_color, background_color) for a 0–100 score."""
+    """Return (text_color, background_color) for a 0–100 score using CSS variables."""
     if score >= 80:
-        return "#10B981", "rgba(16, 185, 129, 0.15)"  # green
+        return "var(--color-success)", "var(--low-impact-bg)"
     if score >= 60:
-        return "#F59E0B", "rgba(245, 158, 11, 0.15)"  # orange
-    return "#EF4444", "rgba(239, 68, 68, 0.15)"      # red
+        return "var(--color-warning)", "var(--medium-impact-bg)"
+    return "var(--color-danger)", "var(--high-impact-bg)"
 
 
 def get_score_emoji(score: float) -> str:
@@ -25,14 +25,14 @@ def get_score_emoji(score: float) -> str:
 
 def get_severity_style(severity: str) -> Tuple[str, str, str]:
     """
-    Return (icon, text_color, background_color) for an IssueDetail severity.
+    Return (icon, text_color, background_color) for an IssueDetail severity using CSS variables.
     """
     level = (severity or "").lower()
     if level in ("critical", "high"):
-        return "🔴", "#EF4444", "rgba(239, 68, 68, 0.15)"
+        return "🔴", "var(--color-danger)", "var(--high-impact-bg)"
     if level == "medium":
-        return "🟡", "#F59E0B", "rgba(245, 158, 11, 0.15)"
-    return "🟢", "#10B981", "rgba(16, 185, 129, 0.15)"
+        return "🟡", "var(--color-warning)", "var(--medium-impact-bg)"
+    return "🟢", "var(--color-success)", "var(--low-impact-bg)"
 
 
 def html_inject(html_str: str) -> None:
