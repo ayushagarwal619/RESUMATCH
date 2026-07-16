@@ -139,12 +139,7 @@ input, textarea {
 /* ==========================================================
    PREMIUM BUTTON SYSTEM (Stripe & Linear-like UX)
    ========================================================== */
-/* ==========================================================
-   PREMIUM BUTTON SYSTEM (Stripe & Linear-like UX)
-   ========================================================== */
-.stButton button[kind="primary"], 
-.stFormSubmitButton button, 
-[data-testid="stFormSubmitButton"] button {
+.stButton button[kind="primary"], .stFormSubmitButton button {
     background: var(--grad-primary) !important;
     color: #FFFFFF !important;
     border: none !important;
@@ -155,139 +150,32 @@ input, textarea {
     box-shadow: 0 8px 24px var(--glow-color) !important;
     transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) !important;
     letter-spacing: -0.01em !important;
-    min-height: 48px !important;
 }
 
-.stButton button[kind="primary"]:hover, 
-.stFormSubmitButton button:hover,
-[data-testid="stFormSubmitButton"] button:hover {
+.stButton button[kind="primary"]:hover, .stFormSubmitButton button:hover {
     transform: translateY(-2px) !important;
     box-shadow: 0 12px 30px var(--glow-color) !important;
     opacity: 0.95 !important;
 }
 
-.stButton button[kind="primary"]:active, 
-.stFormSubmitButton button:active,
-[data-testid="stFormSubmitButton"] button:active {
+.stButton button[kind="primary"]:active, .stFormSubmitButton button:active {
     transform: translateY(0) scale(0.98) !important;
 }
 
-/* Secondary & Download Buttons */
-.stButton button[kind="secondary"], 
-.stDownloadButton button, 
-[data-testid="stDownloadButton"] button,
-.stButton button:not([kind="primary"]),
-[data-testid="stDownloadButton"] a {
+.stButton button[kind="secondary"] {
     background-color: var(--bg-card) !important;
     color: var(--text-primary) !important;
     border: var(--border-soft) !important;
     border-radius: var(--radius-md) !important;
     padding: 12px 28px !important;
     font-weight: 600 !important;
-    font-size: 0.95rem !important;
     transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-    min-height: 48px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-shadow: var(--shadow-premium) !important;
 }
 
-.stButton button[kind="secondary"]:hover, 
-.stDownloadButton button:hover, 
-[data-testid="stDownloadButton"] button:hover,
-.stButton button:not([kind="primary"]):hover,
-[data-testid="stDownloadButton"] a:hover {
+.stButton button[kind="secondary"]:hover {
     background-color: var(--bg-secondary) !important;
     color: var(--accent-primary) !important;
     border-color: var(--accent-primary) !important;
-    transform: translateY(-1px) !important;
-}
-
-/* Disabled buttons and elements styling */
-button:disabled, 
-button[disabled],
-.stButton button:disabled,
-.stDownloadButton button:disabled,
-input:disabled {
-    background: var(--bg-secondary) !important;
-    color: var(--text-muted) !important;
-    border: var(--border-soft) !important;
-    opacity: 0.6 !important;
-    cursor: not-allowed !important;
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Streamlit Expander styling overrides */
-[data-testid="stExpander"] {
-    border: var(--border-soft) !important;
-    background-color: var(--bg-card) !important;
-    border-radius: var(--radius-md) !important;
-    box-shadow: var(--shadow-premium) !important;
-    margin-bottom: 1.2rem !important;
-}
-
-[data-testid="stExpander"] summary {
-    color: var(--text-primary) !important;
-    font-weight: 700 !important;
-    padding: 12px 16px !important;
-    border-radius: var(--radius-md) !important;
-    background-color: var(--bg-card) !important;
-    transition: background-color 200ms ease !important;
-}
-
-[data-testid="stExpander"] summary:hover {
-    background-color: var(--bg-secondary) !important;
-}
-
-[data-testid="stExpander"] summary svg {
-    color: var(--text-primary) !important;
-}
-
-/* Centralized Skill Badges styles */
-.badge-advanced {
-    padding: 2px 6px;
-    background: rgba(139, 92, 246, 0.12);
-    border: 1px solid #8B5CF6;
-    color: var(--badge-advanced-color) !important;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 800;
-    margin-left: 8px;
-}
-
-.badge-intermediate {
-    padding: 2px 6px;
-    background: rgba(59, 130, 246, 0.12);
-    border: 1px solid #3B82F6;
-    color: var(--badge-intermediate-color) !important;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 800;
-    margin-left: 8px;
-}
-
-.badge-beginner {
-    padding: 2px 6px;
-    background: rgba(100, 116, 139, 0.12);
-    border: 1px solid #64748B;
-    color: var(--badge-beginner-color) !important;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 800;
-    margin-left: 8px;
-}
-
-.badge-unverified {
-    padding: 2px 6px;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid #EF4444;
-    color: var(--badge-unverified-color) !important;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 800;
-    margin-left: 8px;
 }
 
 /* Styling the theme toggle button */

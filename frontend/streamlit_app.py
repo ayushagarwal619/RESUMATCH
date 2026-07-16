@@ -88,9 +88,9 @@ def load_css():
                 --accent-primary: #4F46E5;
                 --accent-secondary: #2563EB;
                 --accent-highlight: #06B6D4;
-                --color-success: #15803D;
-                --color-warning: #B45309;
-                --color-danger: #DC2626;
+                --color-success: #10B981;
+                --color-warning: #F59E0B;
+                --color-danger: #EF4444;
                 --text-primary: #111827;
                 --text-secondary: #374151;
                 --text-muted: #6B7280;
@@ -99,19 +99,6 @@ def load_css():
                 --grad-primary: linear-gradient(135deg, #4F46E5 0%, #2563EB 100%);
                 --glow-color: rgba(79, 70, 229, 0.05);
                 --border-glow: 1px solid #D1D5DB;
-                
-                --high-impact-color: #B91C1C;
-                --high-impact-bg: rgba(185, 28, 28, 0.08);
-                --medium-impact-color: #B45309;
-                --medium-impact-bg: rgba(180, 83, 9, 0.08);
-                --low-impact-color: #15803D;
-                --low-impact-bg: rgba(21, 128, 61, 0.08);
-                
-                --badge-advanced-color: #4F46E5;
-                --badge-intermediate-color: #1D4ED8;
-                --badge-beginner-color: #475569;
-                --badge-unverified-color: #B91C1C;
-                --circle-stroke-empty: rgba(0, 0, 0, 0.05);
             }
             """
             theme_slider = """
@@ -140,19 +127,6 @@ def load_css():
                 --grad-primary: linear-gradient(135deg, #7C5CFF 0%, #3BA8FF 100%);
                 --glow-color: rgba(124, 92, 255, 0.2);
                 --border-glow: 1px solid rgba(255, 255, 255, 0.12);
-                
-                --high-impact-color: #EF4444;
-                --high-impact-bg: rgba(239, 68, 68, 0.15);
-                --medium-impact-color: #F59E0B;
-                --medium-impact-bg: rgba(245, 158, 11, 0.15);
-                --low-impact-color: #10B981;
-                --low-impact-bg: rgba(16, 185, 129, 0.15);
-                
-                --badge-advanced-color: #C084FC;
-                --badge-intermediate-color: #60A5FA;
-                --badge-beginner-color: #94A3B8;
-                --badge-unverified-color: #FCA5A5;
-                --circle-stroke-empty: rgba(255, 255, 255, 0.05);
             }
             """
             theme_slider = """

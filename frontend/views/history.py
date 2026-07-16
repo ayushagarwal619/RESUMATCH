@@ -48,7 +48,7 @@ def render() -> None:
     if not history:
         st.markdown(
             textwrap.dedent("""
-            <div class="glass-card" style="padding: 2.5rem; text-align: center; margin-top: 1rem; border: var(--border-soft);">
+            <div class="glass-card" style="padding: 2.5rem; text-align: center; margin-top: 1rem; border-color: rgba(255,255,255,0.03);">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📂</div>
                 <h3 style="color: var(--text-primary); margin-top: 0; margin-bottom: 0.8rem; font-weight: 800; font-size: 1.4rem;">No Analyses Yet</h3>
                 <p style="color: var(--text-secondary); font-size: 1rem; max-width: 420px; margin: 0 auto 2rem auto; line-height: 1.5;">You haven't analyzed any resumes on this account yet. Run your first evaluation to save results.</p>
@@ -82,29 +82,29 @@ def render() -> None:
         with st.expander(title_str):
             st.markdown(
                 textwrap.dedent(f"""
-                <div class="glass-card" style="padding: 1.2rem; margin-bottom: 1rem; border: var(--border-soft);">
+                <div class="glass-card" style="padding: 1.2rem; margin-bottom: 1rem; border-color: rgba(255,255,255,0.02);">
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; text-align: center;">
-                        <div style="background: var(--bg-secondary); border: var(--border-soft); padding: 8px; border-radius: var(--radius-sm);">
+                        <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: var(--radius-sm);">
                             <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">{ats_score:.0f}/100</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Overall</div>
                         </div>
-                        <div style="background: var(--bg-secondary); border: var(--border-soft); padding: 8px; border-radius: var(--radius-sm);">
+                        <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: var(--radius-sm);">
                             <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">{component_scores.get('formatting', 0):.0f}/20</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Formatting</div>
                         </div>
-                        <div style="background: var(--bg-secondary); border: var(--border-soft); padding: 8px; border-radius: var(--radius-sm);">
+                        <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: var(--radius-sm);">
                             <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">{component_scores.get('keywords', 0):.0f}/25</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Keywords</div>
                         </div>
-                        <div style="background: var(--bg-secondary); border: var(--border-soft); padding: 8px; border-radius: var(--radius-sm);">
+                        <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: var(--radius-sm);">
                             <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">{component_scores.get('content', 0):.0f}/25</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Content</div>
                         </div>
-                        <div style="background: var(--bg-secondary); border: var(--border-soft); padding: 8px; border-radius: var(--radius-sm);">
+                        <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: var(--radius-sm);">
                             <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">{component_scores.get('skill_validation', 0):.0f}/15</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Validation</div>
                         </div>
-                        <div style="background: var(--bg-secondary); border: var(--border-soft); padding: 8px; border-radius: var(--radius-sm);">
+                        <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: var(--radius-sm);">
                             <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">{component_scores.get('ats_compatibility', 0):.0f}/15</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Compatibility</div>
                         </div>

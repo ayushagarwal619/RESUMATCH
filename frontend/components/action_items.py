@@ -38,22 +38,22 @@ def display_action_items(analysis: Dict[str, Any]) -> None:
     st.markdown('<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 1rem;">', unsafe_allow_html=True)
     
     for level, source, action in items:
-        # Determine priority style using centralized variables
+        # Determine priority style
         if level in ("critical", "high"):
-            badge_color = "var(--high-impact-color)"
-            badge_bg = "var(--high-impact-bg)"
+            badge_color = "#EF4444"
+            badge_bg = "rgba(239, 68, 68, 0.15)"
             impact_text = "High Impact (+8-12 pts)"
-            border_color = "var(--high-impact-color)"
+            border_color = "#EF4444"
         elif level == "medium":
-            badge_color = "var(--medium-impact-color)"
-            badge_bg = "var(--medium-impact-bg)"
+            badge_color = "#F59E0B"
+            badge_bg = "rgba(245, 158, 11, 0.15)"
             impact_text = "Medium Impact (+4-6 pts)"
-            border_color = "var(--medium-impact-color)"
+            border_color = "#F59E0B"
         else:
-            badge_color = "var(--low-impact-color)"
-            badge_bg = "var(--low-impact-bg)"
+            badge_color = "#10B981"
+            badge_bg = "rgba(16, 185, 129, 0.15)"
             impact_text = "Low Impact (+1-3 pts)"
-            border_color = "var(--low-impact-color)"
+            border_color = "#10B981"
 
         html_inject(f"""
         <div class="glass-card" style="padding: 1.2rem; border-left: 4px solid {border_color}; border-color: {border_color}; display: flex; align-items: flex-start; gap: 12px; margin-bottom: 0.5rem;">
