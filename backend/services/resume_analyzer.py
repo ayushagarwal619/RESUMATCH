@@ -94,7 +94,7 @@ def analyze_full_resume(
     )
 
     jd_comparison_result = None
-    jd_keywords = None
+    jd_keywords = []
     if job_description and job_description.strip():
         parsed_jd = parse_job_description(job_description.strip())
         jd_keywords = list(set(
@@ -121,7 +121,41 @@ def analyze_full_resume(
     grammar_results = get_default_grammar_results()
     location_results = get_default_location_results()
 
-    # 3. Overall triple-scoring calculation
+    # 3. Base python scores calculation (pre-insights)
+    base_scores = calculate_overall_score(
+        text=resume_text,
+        parsed_resume=parsed_resume,
+        skills=skills,
+        keywords=skills, # pass skills as keywords
+        action_verbs=action_verbs,
+        skill_validation_results=skill_validation,
+        grammar_results=grammar_results,
+        location_results=location_results,
+        jd_keywords=jd_keywords,
+        experience_months=experience_months,
+    )
+
+    # 4. Stage 3 Recruiter Feedback (LLM reasoning call)
+    from backend.services.groq_parser import generate_recruiter_feedback
+    feedback = generate_recruiter_feedback(parsed_resume, jd_keywords, base_scores)
+
+    # 5. Merge feedback back into parsed_resume for final scoring/evaluation
+    parsed_resume['candidate_strengths'] = feedback.get('candidate_strengths', [])
+    parsed_resume['candidate_weaknesses'] = feedback.get('candidate_weaknesses', [])
+    parsed_resume['personalized_suggestions'] = feedback.get('personalized_suggestions', [])
+    parsed_resume['recruiter_insights'] = feedback.get('recruiter_insights', {})
+    parsed_resume['skill_analysis'] = feedback.get('skill_analysis', {})
+    parsed_resume['experience_analysis'] = feedback.get('experience_analysis', {})
+
+    # Merge project evaluations strength & weakness
+    proj_evals = feedback.get('project_evaluations', {})
+    for proj in parsed_resume.get('projects', []):
+        title = proj.get('title')
+        eval_info = proj_evals.get(title, {}) if title else {}
+        proj['strength'] = eval_info.get('strength') or "Valid implementation"
+        proj['weakness'] = eval_info.get('weakness') or "No critical weaknesses"
+
+    # 6. Recalculate overall scores with merged recruiter insights
     scores = calculate_overall_score(
         text=resume_text,
         parsed_resume=parsed_resume,
@@ -135,7 +169,7 @@ def analyze_full_resume(
         experience_months=experience_months,
     )
 
-    # 4. Detailed Feedback recommendations
+    # 7. Detailed Feedback recommendations
     detailed_feedback = analyze_issues(
         resume_text=resume_text,
         parsed_resume=parsed_resume,
